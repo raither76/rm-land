@@ -9,14 +9,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using NLog.Extensions.Logging;
+using Rmis.Application;
 using Rmis.Persistence;
 using Rmis.Persistence.Abstract;
+using Rmis.Yandex.Schedule;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Rmis.WebApi
@@ -93,6 +94,14 @@ namespace Rmis.WebApi
             
             return WebHost.CreateDefaultBuilder()
                 .UseEnvironment(environment)
+                .ConfigureServices(services =>
+                {
+                    services.AddControllers();
+                    services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Rmis.WebApi", Version = "v1"}); });
+                    services.AddRmisPersistence(config);
+                    services.AddRmisApplication();
+                    services.AddRmisYandexSchedule(config);
+                })
                 .UseConfiguration(config)
                 .UseContentRoot(contentRootPath)
                 .ConfigureLogging(logging =>
@@ -101,6 +110,7 @@ namespace Rmis.WebApi
                     logging.SetMinimumLevel(LogLevel.Trace);
                 })
                 .UseNLog()
+                
                 .UseStartup<Startup>();
         }
             
