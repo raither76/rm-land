@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Rmis.Persistence;
 
 namespace Rmis.WebApi
 {
@@ -28,6 +29,7 @@ namespace Rmis.WebApi
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Rmis.WebApi", Version = "v1"}); });
+            services.AddRmisPersistence(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

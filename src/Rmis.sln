@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.WebApi", "Rmis.WebApi\Rmis.WebApi.csproj", "{509560AB-606C-4718-8135-95A8EABFB844}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Persistence", "Rmis.Persistence\Rmis.Persistence.csproj", "{358EBE90-9715-4CFB-9CE2-319694AA192D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Domain", "Rmis.Domain\Rmis.Domain.csproj", "{B4FF4B44-58FA-48BD-B301-F1F3D1A26F10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{509560AB-606C-4718-8135-95A8EABFB844}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{509560AB-606C-4718-8135-95A8EABFB844}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{509560AB-606C-4718-8135-95A8EABFB844}.Release|Any CPU.Build.0 = Release|Any CPU
+		{358EBE90-9715-4CFB-9CE2-319694AA192D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{358EBE90-9715-4CFB-9CE2-319694AA192D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{358EBE90-9715-4CFB-9CE2-319694AA192D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{358EBE90-9715-4CFB-9CE2-319694AA192D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4FF4B44-58FA-48BD-B301-F1F3D1A26F10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4FF4B44-58FA-48BD-B301-F1F3D1A26F10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4FF4B44-58FA-48BD-B301-F1F3D1A26F10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4FF4B44-58FA-48BD-B301-F1F3D1A26F10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
