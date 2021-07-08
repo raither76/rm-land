@@ -2,10 +2,12 @@
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Rmis.Domain;
+using Rmis.Persistence.Abstract;
 
 namespace Rmis.Persistence
 {
-    public class RmisDbContext : DbContext
+    public class RmisDbContext : DbContext, IRmisDbContext
     {
         public RmisDbContext()
         {
@@ -20,13 +22,17 @@ namespace Rmis.Persistence
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // var configuration = new ConfigurationBuilder()
-                //     .SetBasePath(Directory.GetCurrentDirectory())
-                //     .AddJsonFile("appsettings.json")
-                //     .Build();
-                // var connectionString = configuration.GetConnectionString("RmisDbContext");
-                optionsBuilder.UseNpgsql("User ID=postgres;Password=1234;Server=localhost;Port=5432;Database=testDb; Integrated Security=true;Pooling=true;");
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                var connectionString = configuration.GetConnectionString("RmisDbContext");
+                optionsBuilder.UseNpgsql(connectionString);
             }
         }
+
+        public IRmisRepository<Schedule> ScheduleRepository { get; }
+        public IRmisRepository<Route> RouteRepository { get; }
+        public IRmisRepository<Station> StationRepository { get; }
     }
 }
