@@ -6,8 +6,6 @@
 
         public int TrainNumber { get; set; }
 
-        public Station FromStation { get; set; }
-
-        public Station ToStation { get; set; }
+        public Direction Direction { get; set; }
     }
 }

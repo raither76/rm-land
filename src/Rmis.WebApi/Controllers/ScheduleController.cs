@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rmis.Application.Abstract;
 
 namespace Rmis.WebApi.Controllers
 {
@@ -12,10 +13,12 @@ namespace Rmis.WebApi.Controllers
     public class ScheduleController : ControllerBase
     {
         private readonly ILogger<ScheduleController> _logger;
+        private readonly IScheduleService _scheduleService;
 
-        public ScheduleController(ILogger<ScheduleController> logger)
+        public ScheduleController(ILogger<ScheduleController> logger, IScheduleService scheduleService)
         {
             _logger = logger;
+            _scheduleService = scheduleService;
         }
 
         [HttpGet]
@@ -23,7 +26,8 @@ namespace Rmis.WebApi.Controllers
         {
             try
             {
-                return this.Ok("Hello World");
+                var result = _scheduleService.GetSchedules();
+                return this.Ok(result);
             }
             catch (Exception e)
             {

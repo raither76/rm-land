@@ -19,6 +19,37 @@ namespace Rmis.Persistance.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("Rmis.Domain.Direction", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("FromStationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("ModifyDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("ToStationId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromStationId");
+
+                    b.HasIndex("ToStationId");
+
+                    b.ToTable("Direction");
+                });
+
             modelBuilder.Entity("Rmis.Domain.Route", b =>
                 {
                     b.Property<long>("Id")
@@ -29,7 +60,7 @@ namespace Rmis.Persistance.Migrations
                     b.Property<DateTimeOffset>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("FromStationId")
+                    b.Property<long?>("DirectionId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("ModifyDate")
@@ -38,17 +69,12 @@ namespace Rmis.Persistance.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("ToStationId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("TrainNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FromStationId");
-
-                    b.HasIndex("ToStationId");
+                    b.HasIndex("DirectionId");
 
                     b.ToTable("Route");
                 });
@@ -106,7 +132,7 @@ namespace Rmis.Persistance.Migrations
                     b.ToTable("Station");
                 });
 
-            modelBuilder.Entity("Rmis.Domain.Route", b =>
+            modelBuilder.Entity("Rmis.Domain.Direction", b =>
                 {
                     b.HasOne("Rmis.Domain.Station", "FromStation")
                         .WithMany()
@@ -119,6 +145,15 @@ namespace Rmis.Persistance.Migrations
                     b.Navigation("FromStation");
 
                     b.Navigation("ToStation");
+                });
+
+            modelBuilder.Entity("Rmis.Domain.Route", b =>
+                {
+                    b.HasOne("Rmis.Domain.Direction", "Direction")
+                        .WithMany()
+                        .HasForeignKey("DirectionId");
+
+                    b.Navigation("Direction");
                 });
 
             modelBuilder.Entity("Rmis.Domain.Schedule", b =>

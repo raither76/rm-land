@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Rmis.Application.Abstract;
 using Rmis.Persistence.Abstract;
+using Rmis.Yandex.Schedule;
 using Rmis.Yandex.Schedule.Abstract;
 
 namespace Rmis.Application
@@ -14,6 +16,11 @@ namespace Rmis.Application
         {
             _scheduleProvider = scheduleProvider;
             _context = context;
+        }
+
+        public List<YandexSchedule> GetSchedules()
+        {
+            return _scheduleProvider.GetSchedules("s9602494", "s2006004", DateTimeOffset.Now, DateTimeOffset.Now);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Rmis.Yandex.Schedule
     {
         public static IServiceCollection AddRmisYandexSchedule(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<YandexScheduleOptions>(configuration);
+            services.Configure<YandexScheduleOptions>(configuration.GetSection("YandexSchedule"));
             services.AddSingleton<IYandexScheduleProvider, YandexScheduleProvider>();
             return services;
         }
