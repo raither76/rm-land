@@ -32,7 +32,7 @@ namespace Rmis.WebApi.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "Error");
-                return this.BadRequest(e);
+                return this.BadRequest(e.Message);
             }
         }
     }

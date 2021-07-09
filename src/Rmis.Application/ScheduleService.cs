@@ -20,7 +20,7 @@ namespace Rmis.Application
 
         public List<YandexSchedule> GetSchedules()
         {
-            return _scheduleProvider.GetSchedules("s9602494", "s2006004", DateTimeOffset.Now, DateTimeOffset.Now);
+            return _scheduleProvider.GetSchedules("s9602494", "s2006004", DateTimeOffset.Now, DateTimeOffset.Now.AddDays(5));
         }
     }
 }

@@ -2,8 +2,8 @@
 {
     public class YandexStation
     {
-        public string Code { get; set; }
+        public string code { get; set; }
 
-        public string Title { get; set; }
+        public string title { get; set; }
     }
 }

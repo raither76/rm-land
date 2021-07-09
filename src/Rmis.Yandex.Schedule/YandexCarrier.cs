@@ -2,6 +2,6 @@
 {
     public class YandexCarrier
     {
-        public string Code { get; set; }
+        public string code { get; set; }
     }
 }

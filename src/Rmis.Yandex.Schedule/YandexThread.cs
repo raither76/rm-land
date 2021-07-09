@@ -2,10 +2,10 @@
 {
     public class YandexThread
     {
-        public string Number { get; set; }
+        public string number { get; set; }
 
-        public string Title { get; set; }
+        public string title { get; set; }
 
-        public YandexCarrier Carrier { get; set; }
+        public YandexCarrier carrier { get; set; }
     }
 }
