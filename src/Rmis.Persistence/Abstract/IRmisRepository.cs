@@ -39,7 +39,7 @@ namespace Rmis.Persistence.Abstract
 
         void Delete(T entity);
 
-        void Delete(Expression<Func<T, bool>> predicate = default);
+        int Delete(Expression<Func<T, bool>> predicate = default);
 
         Task DeleteAsync(Expression<Func<T, bool>> predicate = default, CancellationToken cancellationToken = default);
         

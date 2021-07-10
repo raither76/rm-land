@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,7 +17,6 @@ namespace Rmis.Yandex.Schedule
     {
         private readonly YandexScheduleOptions _config;
         private readonly ILogger<YandexScheduleProvider> _logger;
-        
 
         public YandexScheduleProvider(ILogger<YandexScheduleProvider> logger, IOptions<YandexScheduleOptions> options)
         {
@@ -23,18 +24,19 @@ namespace Rmis.Yandex.Schedule
             _config = options.Value;
         }
 
-        public List<YandexSchedule> GetSchedules(string fromYaStationCode, string toYaStationCode, DateTimeOffset fromDate, DateTimeOffset toDate)
+        public IEnumerable<YandexSchedule> GetSchedules(string fromYaStationCode, string toYaStationCode, DateTime fromDate)
         {
             try
             {
-                if (fromDate.Date > toDate.Date)
-                    throw new ArgumentException($"fromDate({fromDate:dd.MM.yyyy}) mustn't be greater then toDate({toDate:dd.MM.yyyy})");
+                if (fromDate.Date == DateTime.MinValue)
+                    throw new ArgumentException(nameof(fromDate));
 
-                List<YandexSchedule> result = new List<YandexSchedule>();
-                DateTimeOffset from = fromDate;
+                List<YandexSchedule> schedules = new List<YandexSchedule>();
+                DateTime from = fromDate;
+                DateTime to = fromDate.AddDays(_config.ScheduledDaysCount);
                 int limit = _config.Limit;
                 
-                while(from < toDate)
+                while(from <= to)
                 {
                     Console.WriteLine(from.ToString("dd.MM.yy"));
                     int offset = 0;
@@ -44,7 +46,7 @@ namespace Rmis.Yandex.Schedule
                     {
                         data = this.GetScheduleByDate(fromYaStationCode, toYaStationCode, from.ToString("yyyy-MM-dd"), offset, limit);
                         if(data.segments.Count > 0)
-                            result.AddRange(data.segments);
+                            schedules.AddRange(data.segments);
                         
                         offset += limit;
                     } while (data.pagination.total >= offset);
@@ -52,6 +54,7 @@ namespace Rmis.Yandex.Schedule
                     from = from.AddDays(1);
                 }
                 
+                IEnumerable<YandexSchedule> result = schedules.Where(t => t.thread.transport_type == "train" && Regex.IsMatch(t.thread.number, _config.RouteNumberFilteringRegExp)).ToList();
                 return result;
             }
             catch (Exception e)
@@ -70,7 +73,7 @@ namespace Rmis.Yandex.Schedule
                 {
                     { "lang", "ru_RU"},
                     { "from", fromYaStationCode },
-                   // { "to", toYaStationCode },
+                    { "to", toYaStationCode },
                     { "date", date },
                     { "transport_types", "train" },
                     { "offset", offset.ToString() },

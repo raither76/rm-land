@@ -9,6 +9,10 @@ namespace Rmis.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Route> builder)
         {
             builder.ToTable(nameof(Route));
+
+            builder.HasOne(r => r.Direction)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

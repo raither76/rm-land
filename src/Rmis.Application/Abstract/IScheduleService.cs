@@ -5,6 +5,6 @@ namespace Rmis.Application.Abstract
 {
     public interface IScheduleService
     {
-        List<YandexSchedule> GetSchedules();
+        void SyncSchedulesFromYandex();
     }
 }

@@ -8,6 +8,18 @@ namespace Rmis.Domain
         
         public DateTimeOffset ArrivalDate { get; set; }
 
+        public DateTime Date { get; set; }
+
         public Route Route { get; set; }
+
+        /// <summary>
+        /// Расписание синхронизировано с реестром.
+        /// </summary>
+        public bool IsSynchronized { get; set; }
+
+        public string GetKey()
+        {
+            return $"{this.Route.Number}_{this.Date:yyyy-MM-dd}";
+        }
     }
 }

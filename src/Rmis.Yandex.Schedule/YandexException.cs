@@ -2,7 +2,6 @@
 
 namespace Rmis.Yandex.Schedule
 {
-    [Serializable]
     public class YandexException : Exception
     {
         private readonly YandexError _error;

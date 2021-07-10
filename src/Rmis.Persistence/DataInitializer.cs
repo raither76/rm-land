@@ -18,6 +18,8 @@ namespace Rmis.Persistence
             context.Database.EnsureCreated();
 
             EnsureStationsCreated(context);
+
+            EnsureDirectionsCreated(context);
         }
         
         private void EnsureStationsCreated(RmisDbContext context)
@@ -37,6 +39,26 @@ namespace Rmis.Persistence
                     DisplayName = "Москва (Ленинградский вокзал)",
                     CreateDate = DateTimeOffset.Now,
                     ModifyDate = DateTimeOffset.Now }
+            });
+
+            context.SaveChanges();
+        }
+
+        private void EnsureDirectionsCreated(RmisDbContext context)
+        {
+            if (context.DirectionRepository.Any())
+                return;
+
+            context.DirectionRepository.AddRange(new List<Direction>()
+            {
+                new()
+                {
+                    FromStation = context.StationRepository.FirstOrDefault(s => s.YaCode == "s9602494"),
+                    ToStation = context.StationRepository.FirstOrDefault(s => s.YaCode == "s2006004"),
+                    DisplayName = "Санкт-Петербург — Москва",
+                    CreateDate = DateTimeOffset.Now,
+                    ModifyDate = DateTimeOffset.Now
+                }
             });
 
             context.SaveChanges();

@@ -13,21 +13,21 @@ namespace Rmis.Persistence
 {
     public class EfRepository<T> : IRmisRepository<T> where T : class
     {
-        private readonly DbContext dbContext;
-        private readonly DbSet<T> dbSet;
+        private readonly DbContext _dbContext;
+        private readonly DbSet<T> _dbSet;
 
         public IQueryable<T> Query { get; private set; }
 
         public EfRepository(DbContext dbContext, bool asNoTracking)
         {
-            this.dbContext = dbContext;
-            dbSet = dbContext.Set<T>();
-            Query = asNoTracking ? dbSet.AsNoTracking() : dbSet.AsQueryable();
+            _dbContext = dbContext;
+            _dbSet = dbContext.Set<T>();
+            Query = asNoTracking ? _dbSet.AsNoTracking() : _dbSet.AsQueryable();
         }
 
         private EfRepository(DbContext dbContext, IQueryable<T> query)
         {
-            this.dbContext = dbContext;
+            this._dbContext = dbContext;
             Query = query;
         }
 
@@ -56,7 +56,7 @@ namespace Rmis.Persistence
         public IRmisRepository<T> Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
         {
             var query = Query.Include(navigationPropertyPath);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
@@ -67,13 +67,13 @@ namespace Rmis.Persistence
         public IRmisRepository<T> Where(Expression<Func<T, bool>> predicate)
         {
             var query = Query.Where(predicate);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         public IRmisRepository<T> Contains(T item)
         {
             var query = Query.Contains(item);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.Where(Expression<Func<T, bool>> predicate)
@@ -89,7 +89,7 @@ namespace Rmis.Persistence
         public IRmisRepository<TResult> Select<TResult>(Expression<Func<T, TResult>> selector) where TResult : class
         {
             var query = Query.Select(selector);
-            return new EfRepository<TResult>(dbContext, query);
+            return new EfRepository<TResult>(_dbContext, query);
         }
 
         IRmisRepository<TResult> IRmisRepository<T>.Select<TResult>(Expression<Func<T, TResult>> selector)
@@ -100,7 +100,7 @@ namespace Rmis.Persistence
         public IRmisRepository<TResult> SelectMany<TResult>(Expression<Func<T, IEnumerable<TResult>>> selector) where TResult : class
         {
             var query = Query.SelectMany(selector);
-            return new EfRepository<TResult>(dbContext, query);
+            return new EfRepository<TResult>(_dbContext, query);
         }
 
         IRmisRepository<TResult> IRmisRepository<T>.SelectMany<TResult>(Expression<Func<T, IEnumerable<TResult>>> selector)
@@ -111,7 +111,7 @@ namespace Rmis.Persistence
         public IRmisRepository<T> Skip(int count)
         {
             var query = Query.Skip(count);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.Skip(int count)
@@ -122,7 +122,7 @@ namespace Rmis.Persistence
         public IRmisRepository<T> Take(int count)
         {
             var query = Query.Take(count);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.Take(int count)
@@ -133,7 +133,7 @@ namespace Rmis.Persistence
         public IRmisRepository<T> OrderBy<TKey>(Expression<Func<T, TKey>> keySelector)
         {
             var query = Query.OrderBy(keySelector);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.OrderBy<TKey>(Expression<Func<T, TKey>> keySelector)
@@ -144,7 +144,7 @@ namespace Rmis.Persistence
         public IRmisRepository<T> OrderByDescending<TKey>(Expression<Func<T, TKey>> keySelector)
         {
             var query = Query.OrderByDescending(keySelector);
-            return new EfRepository<T>(dbContext, query);
+            return new EfRepository<T>(_dbContext, query);
         }
 
         IRmisRepository<T> IRmisRepository<T>.OrderByDescending<TKey>(Expression<Func<T, TKey>> keySelector)
@@ -198,26 +198,26 @@ namespace Rmis.Persistence
 
         public void Add(T entity)
         {
-            dbSet.Add(entity);
+            _dbSet.Add(entity);
         }
 
         public void AddRange(params T[] entities)
         {
-            dbSet.AddRange(entities);
+            _dbSet.AddRange(entities);
         }
 
         public void AddRange(IEnumerable<T> entities)
         {
-            dbSet.AddRange(entities);
+            _dbSet.AddRange(entities);
         }
 
         public void Update(T entity)
         {
-            var entry = dbContext.Entry(entity);
+            var entry = _dbContext.Entry(entity);
             if (entry.State == EntityState.Detached)
             {
-                dbSet.Attach(entity);
-                entry = dbContext.Entry(entity);
+                _dbSet.Attach(entity);
+                entry = _dbContext.Entry(entity);
             }
             entry.State = EntityState.Modified;
         }
@@ -234,18 +234,18 @@ namespace Rmis.Persistence
 
         public void Delete(T entity)
         {
-            dbSet.Remove(entity);
+            _dbSet.Remove(entity);
         }
 
-        public void Delete(Expression<Func<T, bool>> predicate = default)
+        public int Delete(Expression<Func<T, bool>> predicate = default)
         {
-            var query = predicate == null ? this : dbSet.Where(predicate);
-            query.Delete();
+            var query = predicate == null ? this : _dbSet.Where(predicate);
+            return query.Delete();
         }
 
         public Task DeleteAsync(Expression<Func<T, bool>> predicate = default, CancellationToken cancellationToken = default)
         {
-            var query = predicate == null ? this : dbSet.Where(predicate);
+            var query = predicate == null ? this : _dbSet.Where(predicate);
             return query.DeleteAsync(cancellationToken);
         }
 

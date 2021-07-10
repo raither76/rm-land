@@ -2,10 +2,11 @@
 
 namespace Rmis.Persistence.Abstract
 {
-    public interface IRmisDbContext
+    public interface IRmisDbContext : IUnitOfWork
     {
-        IRmisRepository<Schedule> ScheduleRepository { get; }
+        IScheduleRepository ScheduleRepository { get; }
         IRmisRepository<Route> RouteRepository { get; }
         IRmisRepository<Station> StationRepository { get; }
+        IDirectionRepository DirectionRepository { get; }
     }
 }

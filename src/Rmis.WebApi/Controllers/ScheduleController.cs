@@ -21,13 +21,13 @@ namespace Rmis.WebApi.Controllers
             _scheduleService = scheduleService;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost]
+        public IActionResult Sync()
         {
             try
             {
-                var result = _scheduleService.GetSchedules();
-                return this.Ok(result);
+                _scheduleService.SyncSchedulesFromYandex();
+                return this.Ok("Расписание синхронизировано");
             }
             catch (Exception e)
             {

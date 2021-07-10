@@ -36,8 +36,9 @@ namespace Rmis.Persistence
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(RmisDbContext).Assembly);
         }
 
-        public IRmisRepository<Schedule> ScheduleRepository => new EfRepository<Schedule>(this, true);
-        public IRmisRepository<Route> RouteRepository => new EfRepository<Route>(this, true);
-        public IRmisRepository<Station> StationRepository => new EfRepository<Station>(this, true);
+        public IScheduleRepository ScheduleRepository => new ScheduleRepository(this);
+        public IRmisRepository<Route> RouteRepository => new EfRepository<Route>(this, false);
+        public IRmisRepository<Station> StationRepository => new EfRepository<Station>(this, false);
+        public IDirectionRepository DirectionRepository => new DirectionRepository(this);
     }
 }
