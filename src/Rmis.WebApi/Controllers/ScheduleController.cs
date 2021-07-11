@@ -49,5 +49,19 @@ namespace Rmis.WebApi.Controllers
                 return this.BadRequest(e.Message);
             }
         }
+
+        [HttpGet]
+        public IActionResult GetSchedules(string routeNumber)
+        {
+            try
+            {
+                return this.Ok(_scheduleService.GetSchedulesByRouteNumber(routeNumber));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return this.BadRequest(e.Message);
+            }
+        }
     }
 }

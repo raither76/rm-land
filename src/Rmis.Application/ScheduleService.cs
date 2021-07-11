@@ -231,5 +231,13 @@ namespace Rmis.Application
             
             _logger.LogInformation("Расписание синхронизировано");
         }
+
+        public List<Schedule> GetSchedulesByRouteNumber(string routeNumber)
+        {
+            if (string.IsNullOrEmpty(routeNumber))
+                throw new ArgumentNullException(nameof(routeNumber));
+
+            return _context.ScheduleRepository.GetAllByRouteNumber(routeNumber).ToList();
+        }
     }
 }

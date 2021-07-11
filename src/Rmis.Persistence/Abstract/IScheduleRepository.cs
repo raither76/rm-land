@@ -10,6 +10,8 @@ namespace Rmis.Persistence.Abstract
         
         IQueryable<Schedule> GetAllByFromDate(DateTime fromDate);
 
+        IQueryable<Schedule> GetAllByRouteNumber(string routeNumber);
+
         int RemoveBeforeDate(DateTime beforeDate);
     }
 }

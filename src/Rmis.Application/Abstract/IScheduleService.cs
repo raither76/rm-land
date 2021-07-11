@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Rmis.Domain;
 using Rmis.Yandex.Schedule;
 
 namespace Rmis.Application.Abstract
@@ -8,5 +9,7 @@ namespace Rmis.Application.Abstract
         void SyncSchedulesFromYandex();
 
         void SyncSchedulesFromGoogle();
+
+        List<Schedule> GetSchedulesByRouteNumber(string routeNumber);
     }
 }
