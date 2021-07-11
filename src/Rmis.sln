@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Application", "Rmis.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Yandex.Schedule", "Rmis.Yandex.Schedule\Rmis.Yandex.Schedule.csproj", "{959C57CE-41A3-41D9-BD7F-84CFC63B6540}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Google.Sheets", "Rmis.Google.Sheets\Rmis.Google.Sheets.csproj", "{481D63E1-D797-48B4-B8AA-0506439DC4BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{959C57CE-41A3-41D9-BD7F-84CFC63B6540}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{959C57CE-41A3-41D9-BD7F-84CFC63B6540}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{959C57CE-41A3-41D9-BD7F-84CFC63B6540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

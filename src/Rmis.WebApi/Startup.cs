@@ -35,6 +35,8 @@ namespace Rmis.WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Rmis.WebApi v1"));
             }
+            
+            
 
             app.UseHttpsRedirection();
 

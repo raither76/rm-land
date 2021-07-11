@@ -8,7 +8,6 @@ using Rmis.Application.Abstract;
 
 namespace Rmis.WebApi.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
     public class ScheduleController : ControllerBase
     {
@@ -21,12 +20,27 @@ namespace Rmis.WebApi.Controllers
             _scheduleService = scheduleService;
         }
 
-        [HttpPost]
-        public IActionResult Sync()
+        [HttpPost("SyncYandex")]
+        public IActionResult SyncYandex()
         {
             try
             {
                 _scheduleService.SyncSchedulesFromYandex();
+                return this.Ok("Расписание синхронизировано");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error");
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("SyncGoogle")]
+        public IActionResult SyncGoogle()
+        {
+            try
+            {
+                _scheduleService.SyncSchedulesFromGoogle();
                 return this.Ok("Расписание синхронизировано");
             }
             catch (Exception e)

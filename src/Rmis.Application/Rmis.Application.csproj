@@ -10,6 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Rmis.Google.Sheets\Rmis.Google.Sheets.csproj" />
       <ProjectReference Include="..\Rmis.Persistence\Rmis.Persistence.csproj" />
       <ProjectReference Include="..\Rmis.Yandex.Schedule\Rmis.Yandex.Schedule.csproj" />
     </ItemGroup>

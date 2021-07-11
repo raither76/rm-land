@@ -15,6 +15,7 @@ using NLog;
 using NLog.Web;
 using NLog.Extensions.Logging;
 using Rmis.Application;
+using Rmis.Google.Sheets;
 using Rmis.Persistence;
 using Rmis.Persistence.Abstract;
 using Rmis.Yandex.Schedule;
@@ -101,6 +102,7 @@ namespace Rmis.WebApi
                     services.AddRmisPersistence(config);
                     services.AddRmisApplication();
                     services.AddRmisYandexSchedule(config);
+                    services.AddRmisGoogleGoogleSheets();
                 })
                 .UseConfiguration(config)
                 .UseContentRoot(contentRootPath)

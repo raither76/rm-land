@@ -58,6 +58,14 @@ namespace Rmis.Persistence
                     DisplayName = "Санкт-Петербург — Москва",
                     CreateDate = DateTimeOffset.Now,
                     ModifyDate = DateTimeOffset.Now
+                },
+                new()
+                {
+                    FromStation = context.StationRepository.FirstOrDefault(s => s.YaCode == "s2006004"),
+                    ToStation = context.StationRepository.FirstOrDefault(s => s.YaCode == "s9602494"),
+                    DisplayName = "Москва — Санкт-Петербург",
+                    CreateDate = DateTimeOffset.Now,
+                    ModifyDate = DateTimeOffset.Now
                 }
             });
 
