@@ -32,7 +32,7 @@ namespace Rmis.Application
         {
             // string fromStationCode = "s9602494";
             // string toStationCode = "s2006004";
-            DateTime fromDate = DateTime.Now.Date.AddDays(-1);
+            DateTime fromDate = DateTime.Now.Date;
             
             _logger.LogInformation($"Запуск процедуры сихронизации расписания в соответствии с данными сервиса \"Яндекс.Расписание\", начиная с даты: {fromDate:dd.MM.yyyy}");
 
@@ -138,7 +138,7 @@ namespace Rmis.Application
 
         public void SyncSchedulesFromGoogle()
         {
-            DateTime fromDate = DateTime.Now.Date.AddDays(-1);
+            DateTime fromDate = DateTime.Now.Date;
             
             _logger.LogInformation($"Запуск процедуры сихронизации расписания в соответствии с данными Реестра в Google Sheets, начиная с даты: {fromDate:dd.MM.yyyy}");
 
@@ -213,6 +213,7 @@ namespace Rmis.Application
                     #endregion
                 }
                 
+                //  Устанавливаем признак, для того чтобы данные не перезатерлись данными из Яндекс.
                 schedule.IsSynchronized = true;
             }
 

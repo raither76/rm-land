@@ -96,6 +96,9 @@ namespace Rmis.Google.Sheets
                 ArrivalDate = this.ParseDateFromTime(date, arrivalTime)
             };
 
+            if (result.DepartureDate > result.ArrivalDate)  //  Если время прибытия выпадает на след день, то корректируем некорректно посчитанную дату, прибавляя 1 день.
+                result.ArrivalDate = result.ArrivalDate.AddDays(1);
+
             return result;
         }
 
