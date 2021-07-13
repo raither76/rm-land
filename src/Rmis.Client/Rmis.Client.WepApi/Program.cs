@@ -57,11 +57,10 @@ namespace Rmis.Client.WepApi
 
                         var concreteContext = (RmisClientDbContext)context;
                         concreteContext.Database.Migrate();
-                        //DataInitializer.Initialize(concreteContext);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex, "An error occurred while migrating or initializing the database.");
+                        logger.Error(ex, "Произошла ошибка при инициализации базы данных");
                         throw;
                     }
                 }
@@ -71,7 +70,7 @@ namespace Rmis.Client.WepApi
             catch (Exception ex)
             {
                 if(logger != null)
-                    logger.Error(ex, "Stopped program because of exception");
+                    logger.Error(ex, "В процессе работа приложения были обнаружены исключительны ситуации. Работа приложения приостановлена");
                 
                 throw;
             }
