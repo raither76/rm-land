@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rmis.Client.Application.Abstract;
 using Rmis.Client.Domain;
 
 namespace Rmis.Client.Application
@@ -15,7 +16,9 @@ namespace Rmis.Client.Application
                 RmisHubUrl = rmisHubUrl,
                 RouteNumber = routeNumber
             };
-            return services.AddSingleton(config);
+            
+            return services.AddSingleton(config)
+                .AddScoped<IScheduleService, ScheduleService>();
         }
     }
 }

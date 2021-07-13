@@ -7,6 +7,6 @@ namespace Rmis.Client.Application.Abstract
     {
         IEnumerable<Schedule> GetSchedules();
 
-        void LoadSchedules();
+        void SyncSchedulesFromHub();
     }
 }

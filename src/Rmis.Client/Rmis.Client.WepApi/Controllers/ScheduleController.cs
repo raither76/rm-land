@@ -4,27 +4,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Rmis.Client.Application.Abstract;
 
 namespace Rmis.Client.WepApi.Controllers
 {
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class ScheduleController : ControllerBase
     {
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<ScheduleController> _logger;
+        private readonly IScheduleService _scheduleService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public ScheduleController(ILogger<ScheduleController> logger, IScheduleService scheduleService)
         {
             _logger = logger;
+            _scheduleService = scheduleService;
         }
 
-        [HttpGet]
-        public IActionResult GetSchedules()
+        [HttpPost]
+        public IActionResult SyncSchedulesFromHub()
         {
             try
             {
-                
-                
-                return this.Ok();
+                _scheduleService.SyncSchedulesFromHub();
+                return this.Ok("Расписание синхоринизировано");
             }
             catch (Exception e)
             {

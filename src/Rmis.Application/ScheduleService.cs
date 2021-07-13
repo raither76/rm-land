@@ -233,12 +233,12 @@ namespace Rmis.Application
             _logger.LogInformation("Расписание синхронизировано");
         }
 
-        public List<Schedule> GetSchedulesByRouteNumber(string routeNumber)
+        public IEnumerable<ScheduleVm> GetSchedulesByRouteNumber(string routeNumber)
         {
             if (string.IsNullOrEmpty(routeNumber))
                 throw new ArgumentNullException(nameof(routeNumber));
 
-            return _context.ScheduleRepository.GetAllByRouteNumber(routeNumber).ToList();
+            return _context.ScheduleRepository.GetActualAllByRouteNumber(routeNumber).Select(s => ScheduleVm.CreateFrom(s));
         }
     }
 }

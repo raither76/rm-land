@@ -27,11 +27,13 @@ namespace Rmis.Persistence
                 .Where(s => s.Date >= fromDate);
         }
 
-        public IQueryable<Schedule> GetAllByRouteNumber(string routeNumber)
+        public IQueryable<Schedule> GetActualAllByRouteNumber(string routeNumber)
         {
             return this.Include(s => s.Route)
                 .Include(s => s.Route.Direction)
-                .Where(s => s.Route.Number.ToString() == routeNumber);
+                .Include(s => s.Route.Direction.FromStation)
+                .Include(s => s.Route.Direction.ToStation)
+                .Where(s => s.Route.Number.ToString() == routeNumber && s.Date >= DateTime.Now.Date);
         }
 
         public int RemoveBeforeDate(DateTime beforeDate)
