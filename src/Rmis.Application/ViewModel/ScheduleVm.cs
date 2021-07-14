@@ -18,6 +18,8 @@ namespace Rmis.Application
         public string To { get; set; }
 
         public DateTime Date { get; set; }
+        
+        public string TrainDriver { get; set; }
 
         public static ScheduleVm CreateFrom(Schedule schedule)
         {
@@ -30,7 +32,8 @@ namespace Rmis.Application
                 ArrivalDate = schedule.ArrivalDate,
                 DepartureDate = schedule.DepartureDate,
                 RouteNumber = schedule.Route?.Number.ToString(),
-                TrainNumber = schedule.Route?.TrainNumber,
+                TrainNumber = schedule.TrainNumber,
+                TrainDriver = schedule.TrainDriver,
                 From = schedule.Route?.Direction?.FromStation?.DisplayName,
                 To = schedule.Route?.Direction?.ToStation?.DisplayName
             };

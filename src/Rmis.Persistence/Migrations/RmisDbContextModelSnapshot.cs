@@ -69,9 +69,6 @@ namespace Rmis.Persistance.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TrainNumber")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DirectionId");
@@ -107,12 +104,15 @@ namespace Rmis.Persistance.Migrations
                     b.Property<long?>("RouteId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("TrainDriver")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TrainNumber")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RouteId");
-
-                    b.HasIndex("Date", "RouteId")
-                        .IsUnique();
 
                     b.ToTable("Schedule");
                 });

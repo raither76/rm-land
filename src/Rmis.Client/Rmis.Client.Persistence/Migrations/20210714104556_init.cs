@@ -18,6 +18,7 @@ namespace Rmis.Client.Persistence.Migrations
                     DepartureDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ArrivalDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     TrainNumber = table.Column<string>(type: "text", nullable: false),
+                    TrainDriver = table.Column<string>(type: "text", nullable: true),
                     RouteNumber = table.Column<string>(type: "text", nullable: false),
                     From = table.Column<string>(type: "text", nullable: false),
                     To = table.Column<string>(type: "text", nullable: false),

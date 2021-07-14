@@ -13,6 +13,8 @@ namespace Rmis.Google.Sheets
         public DateTimeOffset DepartureDate { get; set; }
 
         public DateTimeOffset ArrivalDate { get; set; }
+
+        public string TrainDriver { get; set; }
         
         public string GetKey()
         {

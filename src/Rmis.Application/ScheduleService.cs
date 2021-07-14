@@ -33,23 +33,23 @@ namespace Rmis.Application
             // string fromStationCode = "s9602494";
             // string toStationCode = "s2006004";
             DateTime fromDate = DateTime.Now.Date;
-            
+
             _logger.LogInformation($"Запуск процедуры сихронизации расписания в соответствии с данными сервиса \"Яндекс.Расписание\", начиная с даты: {fromDate:dd.MM.yyyy}");
 
             //  Получаем справочник маршрутов Сапсап.
             Dictionary<string, Route> routeByNumber = _context.RouteRepository
                 .Include(r => r.Direction)
                 .ToDictionary(k => k.Number.ToString());
-            
+
             foreach (Direction direction in _context.DirectionRepository.GetAll().ToList())
             {
                 _logger.LogInformation($"Актуализация расписания по направлению \"{direction.DisplayName}\" ...");
-                
+
                 //  Получение текущих элементов расписания.
                 Dictionary<string, Schedule> scheduleByKey = _context.ScheduleRepository
                     .GetAllByDirectionAndFromDate(direction.Id, fromDate)
-                    .ToDictionary(k => k.GetKey());
-                
+                    .ToDictionary(k => $"{k.Route.Number}_{k.Date:dd.MM.yyyy}");
+
                 //  Получение расписаний от сервиса Яндекс.
                 Dictionary<string, YandexSchedule> yandexScheduleByKey = _scheduleProvider
                     .GetSchedules(direction.FromStation.YaCode, direction.ToStation.YaCode, fromDate)
@@ -58,12 +58,12 @@ namespace Rmis.Application
                 foreach (KeyValuePair<string, YandexSchedule> yandexSchedulePair in yandexScheduleByKey)
                 {
                     Schedule schedule = null;
-                    YandexSchedule yaSchedule = yandexSchedulePair.Value;   //  Элемент расписания от Яндекса.
+                    YandexSchedule yaSchedule = yandexSchedulePair.Value; //  Элемент расписания от Яндекса.
                     string yaRouteNumber = yaSchedule.thread.GetNormalizedNumber();
                     if (!scheduleByKey.ContainsKey(yandexSchedulePair.Key))
                     {
                         #region Создание нового элемента
-                        
+
                         Route route = null;
                         if (!routeByNumber.ContainsKey(yaRouteNumber))
                         {
@@ -71,16 +71,15 @@ namespace Rmis.Application
                             {
                                 Direction = direction,
                                 Number = int.Parse(yaRouteNumber),
-                                TrainNumber = yaRouteNumber,
                                 CreateDate = DateTimeOffset.Now,
                                 ModifyDate = DateTimeOffset.Now
                             };
 
                             routeByNumber[route.Number.ToString()] = route;
                         }
-                        else 
-                            route = routeByNumber[yaRouteNumber]; 
-                        
+                        else
+                            route = routeByNumber[yaRouteNumber];
+
                         schedule = new Schedule()
                         {
                             Date = DateTime.Parse(yaSchedule.start_date),
@@ -90,29 +89,26 @@ namespace Rmis.Application
                             CreateDate = DateTimeOffset.Now,
                             ModifyDate = DateTimeOffset.Now
                         };
-                        
+
                         _context.ScheduleRepository.Add(schedule);
-                        
+
                         #endregion
                     }
                     else
                     {
                         #region Обновление существующего
-                        
-                        schedule = scheduleByKey[yandexSchedulePair.Key];
-                        if (!schedule.IsSynchronized)   //  Обновляем расписание в том случае, если оно не синхронизировано с реестром. Тем самым считаем информацию из реестра более приоритетной.
-                        {
-                            if (schedule.ArrivalDate != yaSchedule.arrival)
-                            {
-                                _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {yaSchedule.arrival:dd.MM.yyyy hh:mm}");
-                                schedule.ArrivalDate = yaSchedule.arrival;
-                            }
 
-                            if (schedule.DepartureDate != yandexSchedulePair.Value.departure)
-                            {
-                                _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {yaSchedule.departure:dd.MM.yyyy hh:mm}");
-                                schedule.DepartureDate = yaSchedule.departure;
-                            }
+                        schedule = scheduleByKey[yandexSchedulePair.Key];
+                        if (schedule.ArrivalDate != yaSchedule.arrival)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {yaSchedule.arrival:dd.MM.yyyy hh:mm}");
+                            schedule.ArrivalDate = yaSchedule.arrival;
+                        }
+
+                        if (schedule.DepartureDate != yandexSchedulePair.Value.departure)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {yaSchedule.departure:dd.MM.yyyy hh:mm}");
+                            schedule.DepartureDate = yaSchedule.departure;
                         }
                         
                         #endregion
@@ -123,122 +119,134 @@ namespace Rmis.Application
             _logger.LogInformation("Сохранение изменений ...");
             _context.SaveChanges();
             _logger.LogInformation("Изменения сохранены");
-            
+
             #region Удаление неактуальных Элементов расписания
-            
+
             // //  Removing not actual entities.
             // _logger.LogInformation("Удаление неактуальных расписаний ...");
             // int deletedCount = _context.ScheduleRepository.RemoveBeforeDate(fromDate);
             // _logger.LogInformation("Количество удаленных неактуальных расписаний: {DeletedCount}", deletedCount);
-            
+
             #endregion
-            
+
             _logger.LogInformation("Расписание синхронизировано");
         }
 
         public void SyncSchedulesFromGoogle()
         {
             DateTime fromDate = DateTime.Now.Date;
-            
+
             _logger.LogInformation($"Запуск процедуры сихронизации расписания в соответствии с данными Реестра в Google Sheets, начиная с даты: {fromDate:dd.MM.yyyy}");
 
             //  Получаем справочник маршрутов Сапсап.
             Dictionary<int, Route> routeByNumber = _context.RouteRepository
                 .Include(r => r.Direction)
                 .ToDictionary(k => k.Number);
-            
+
             //  Получение текущих элементов расписания.
-            Dictionary<string, Schedule> scheduleByKey = _context.ScheduleRepository
-                .GetAllByFromDate(fromDate)
-                .ToDictionary(k => k.GetKey());
-            
+            List<Schedule> schedules = _context.ScheduleRepository
+                .GetAllByFromDate(fromDate).ToList();
+
             //  Получение расписаний из Реестра размещенного в Google Sheets.
             Dictionary<string, GoogleSchedule> googleScheduleByKey = _googleScheduleProvider.GetSchedules(fromDate)
-                                                                                .ToDictionary(k => k.GetKey());
+                .ToDictionary(k => k.GetKey());
 
             foreach (KeyValuePair<string, GoogleSchedule> googleSchedulePair in googleScheduleByKey)
             {
-                Schedule schedule = null;
-                GoogleSchedule googleSchedule = googleSchedulePair.Value;   //  Элемент расписания из Реестра.
-                if (!scheduleByKey.ContainsKey(googleSchedulePair.Key))
+                GoogleSchedule googleSchedule = googleSchedulePair.Value; //  Элемент расписания из Реестра.
+
+                string[] trainNumberChunks = googleSchedule.TrainNumber.Split("+", StringSplitOptions.RemoveEmptyEntries);
+                foreach (string trainNumber in trainNumberChunks)
                 {
-                    #region Создание нового элемента
+                    IEnumerable<Schedule> schedulesByRouteNumber = schedules.Where(s => s.Route.Number == googleSchedule.Number && s.Date == googleSchedule.Date);
+                    Schedule schedule = schedulesByRouteNumber.FirstOrDefault(s => s.TrainNumber == trainNumber);
+                    if (schedule == null)
+                    {
+                        #region Создание нового элемента
 
-                    if (!routeByNumber.ContainsKey(googleSchedule.Number))
-                    {
-                        _logger.LogWarning($"В справочнике маршрутов отсутствует маршрут с номером: {googleSchedule.Number}");
-                        continue;
+                        if (!routeByNumber.ContainsKey(googleSchedule.Number))
+                        {
+                            _logger.LogWarning($"В справочнике маршрутов отсутствует маршрут с номером: {googleSchedule.Number}");
+                            continue;
+                        }
+
+                        Route route = routeByNumber[googleSchedule.Number];
+
+                        schedule = new Schedule()
+                        {
+                            Date = googleSchedule.Date,
+                            Route = route,
+                            TrainNumber = trainNumber,
+                            TrainDriver = googleSchedule.TrainDriver,
+                            ArrivalDate = googleSchedule.ArrivalDate,
+                            DepartureDate = googleSchedule.DepartureDate,
+                            CreateDate = DateTimeOffset.Now,
+                            ModifyDate = DateTimeOffset.Now
+                        };
+
+                        schedules.Add(schedule);
+                        _context.ScheduleRepository.Add(schedule);
+
+                        #endregion
                     }
-                    
-                    Route route = routeByNumber[googleSchedule.Number]; 
-                    
-                    schedule = new Schedule()
+                    else
                     {
-                        Date = googleSchedule.Date,
-                        Route = route,
-                        ArrivalDate = googleSchedule.ArrivalDate,
-                        DepartureDate = googleSchedule.DepartureDate,
-                        CreateDate = DateTimeOffset.Now,
-                        ModifyDate = DateTimeOffset.Now
-                    };
-                    
-                    _context.ScheduleRepository.Add(schedule);
-                    
-                    #endregion
+                        #region Обновление существующего
+
+                        if (schedule.ArrivalDate != googleSchedule.ArrivalDate)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {googleSchedule.ArrivalDate:dd.MM.yyyy hh:mm}");
+                            schedule.ArrivalDate = googleSchedule.ArrivalDate;
+                        }
+
+                        if (schedule.DepartureDate != googleSchedule.DepartureDate)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {googleSchedule.DepartureDate:dd.MM.yyyy hh:mm}");
+                            schedule.DepartureDate = googleSchedule.DepartureDate;
+                        }
+
+                        if (schedule.TrainNumber != googleSchedule.TrainNumber)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" был актуализирован номер поезда. Старое значение: {schedule.TrainNumber}. Новое значение: {googleSchedule.TrainNumber}");
+                            schedule.TrainNumber = googleSchedule.TrainNumber;
+                        }
+
+                        if (schedule.TrainDriver != googleSchedule.TrainDriver)
+                        {
+                            _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" был актуализирован машинист поезда. Старое значение: {schedule.TrainDriver}. Новое значение: {googleSchedule.TrainDriver}");
+                            schedule.TrainDriver = googleSchedule.TrainDriver;
+                        }
+
+                        #endregion
+                    }
+
+                    //  Устанавливаем признак, для того чтобы данные не перезатерлись данными из Яндекс.
+                    schedule.IsSynchronized = true;
                 }
-                else
-                {
-                    #region Обновление существующего
-                    
-                    schedule = scheduleByKey[googleSchedulePair.Key];
-                    
-                    if (schedule.ArrivalDate != googleSchedule.ArrivalDate)
-                    {
-                        _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {googleSchedule.ArrivalDate:dd.MM.yyyy hh:mm}");
-                        schedule.ArrivalDate = googleSchedule.ArrivalDate;
-                    }
-
-                    if (schedule.DepartureDate != googleSchedule.DepartureDate)
-                    {
-                        _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {googleSchedule.DepartureDate:dd.MM.yyyy hh:mm}");
-                        schedule.DepartureDate = googleSchedule.DepartureDate;
-                    }
-
-                    if (schedule.Route.TrainNumber != googleSchedule.TrainNumber)
-                    {
-                        _logger.LogInformation($"По маршруту номер \"{schedule.Route.Number}\" был актуализирован номер поезда. Старое значение: {schedule.Route.TrainNumber}. Новое значение: {googleSchedule.TrainNumber}");
-                        schedule.Route.TrainNumber = googleSchedule.TrainNumber;
-                    }
-                    
-                    #endregion
-                }
-                
-                //  Устанавливаем признак, для того чтобы данные не перезатерлись данными из Яндекс.
-                schedule.IsSynchronized = true;
             }
 
             _logger.LogInformation("Сохранение изменений ...");
             _context.SaveChanges();
             _logger.LogInformation("Изменения сохранены");
-            
+
             #region Удаление неактуальных Элементов расписания
-            
+
             // //  Removing not actual entities.
             // _logger.LogInformation("Удаление неактуальных расписаний ...");
             // int deletedCount = _context.ScheduleRepository.RemoveBeforeDate(fromDate);
             // _logger.LogInformation("Количество удаленных неактуальных расписаний: {DeletedCount}", deletedCount);
-            
+
             #endregion
-            
+
             _logger.LogInformation("Расписание синхронизировано");
         }
 
-        public IEnumerable<ScheduleVm> GetSchedulesByRouteNumber(string routeNumber)
+        public IEnumerable<ScheduleVm> GetSchedulesByRouteNumber(string trainNumber)
         {
-            if (string.IsNullOrEmpty(routeNumber))
-                throw new ArgumentNullException(nameof(routeNumber));
+            if (string.IsNullOrEmpty(trainNumber))
+                throw new ArgumentNullException(nameof(trainNumber));
 
-            return _context.ScheduleRepository.GetActualAllByRouteNumber(routeNumber).Select(s => ScheduleVm.CreateFrom(s));
+            return _context.ScheduleRepository.GetActualAllByTrainNumber(trainNumber).Select(s => ScheduleVm.CreateFrom(s));
         }
     }
 }

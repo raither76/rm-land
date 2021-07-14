@@ -53,6 +53,9 @@ namespace Rmis.Client.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("TrainDriver")
+                        .HasColumnType("text");
+
                     b.Property<string>("TrainNumber")
                         .IsRequired()
                         .HasColumnType("text");

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rmis.Client.Application.Abstract;
+using Rmis.Client.Domain;
 
 namespace Rmis.Client.WepApi.Controllers
 {
@@ -20,13 +21,28 @@ namespace Rmis.Client.WepApi.Controllers
             _scheduleService = scheduleService;
         }
 
-        [HttpPost]
+        [HttpPost("/SyncSchedules")]
         public IActionResult SyncSchedulesFromHub()
         {
             try
             {
                 _scheduleService.SyncSchedulesFromHub();
                 return this.Ok("Расписание синхоринизировано");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return this.BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetCurrentSchedule()
+        {
+            try
+            {
+                Schedule result = _scheduleService.GetCurrentSchedule();
+                return this.Ok(result);
             }
             catch (Exception e)
             {

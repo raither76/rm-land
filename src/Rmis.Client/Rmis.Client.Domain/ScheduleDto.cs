@@ -12,6 +12,8 @@ namespace Rmis.Client.Domain
 
         public string TrainNumber { get; set; }
 
+        public string TrainDriver { get; set; }
+
         public string From { get; set; }
 
         public string To { get; set; }
@@ -20,7 +22,7 @@ namespace Rmis.Client.Domain
 
         public string GetKey()
         {
-            return $"{this.RouteNumber}_{this.Date:dd.MM.yyyy}";
+            return $"{this.TrainNumber}_{this.Date:dd.MM.yyyy}";
         }
     }
 }

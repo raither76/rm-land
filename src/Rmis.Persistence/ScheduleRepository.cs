@@ -17,7 +17,7 @@ namespace Rmis.Persistence
         {
             return this.Include(s => s.Route)
                 .Include(s => s.Route.Direction)
-                .Where(s => s.Route.Direction.Id == directionId && s.Date >= fromDate);
+                .Where(s => s.Route.Direction.Id == directionId && !s.IsSynchronized && s.Date >= fromDate);
         }
         
         public IQueryable<Schedule> GetAllByFromDate(DateTime fromDate)
@@ -27,13 +27,13 @@ namespace Rmis.Persistence
                 .Where(s => s.Date >= fromDate);
         }
 
-        public IQueryable<Schedule> GetActualAllByRouteNumber(string routeNumber)
+        public IQueryable<Schedule> GetActualAllByTrainNumber(string trainNumber)
         {
             return this.Include(s => s.Route)
                 .Include(s => s.Route.Direction)
                 .Include(s => s.Route.Direction.FromStation)
                 .Include(s => s.Route.Direction.ToStation)
-                .Where(s => s.Route.Number.ToString() == routeNumber && s.Date >= DateTime.Now.Date);
+                .Where(s => s.TrainNumber == trainNumber && s.Date >= DateTime.Now.Date);
         }
 
         public int RemoveBeforeDate(DateTime beforeDate)

@@ -4,6 +4,6 @@
     {
         public string RmisHubUrl { get; init; }
 
-        public string RouteNumber { get; init; }
+        public string TrainNumber { get; init; }
     }
 }

@@ -10,11 +10,11 @@ namespace Rmis.Client.Application
         public static IServiceCollection AddRmisClientApplication(this IServiceCollection services, IConfiguration configuration)
         {
             string rmisHubUrl = configuration["RmisHubUrl"];
-            string routeNumber = configuration["RouteNumber"];
+            string trainNumber = configuration["TrainNumber"];
             AppConfig config = new()
             {
                 RmisHubUrl = rmisHubUrl,
-                RouteNumber = routeNumber
+                TrainNumber = trainNumber
             };
             
             return services.AddSingleton(config)

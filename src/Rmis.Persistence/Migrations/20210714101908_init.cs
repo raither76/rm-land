@@ -60,7 +60,6 @@ namespace Rmis.Persistance.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Number = table.Column<int>(type: "integer", nullable: false),
-                    TrainNumber = table.Column<string>(type: "text", nullable: true),
                     DirectionId = table.Column<long>(type: "bigint", nullable: true),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -86,6 +85,8 @@ namespace Rmis.Persistance.Migrations
                     ArrivalDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     RouteId = table.Column<long>(type: "bigint", nullable: true),
+                    TrainDriver = table.Column<string>(type: "text", nullable: true),
+                    TrainNumber = table.Column<string>(type: "text", nullable: true),
                     IsSynchronized = table.Column<bool>(type: "boolean", nullable: false),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -115,12 +116,6 @@ namespace Rmis.Persistance.Migrations
                 name: "IX_Route_DirectionId",
                 table: "Route",
                 column: "DirectionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Schedule_Date_RouteId",
-                table: "Schedule",
-                columns: new[] { "Date", "RouteId" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedule_RouteId",

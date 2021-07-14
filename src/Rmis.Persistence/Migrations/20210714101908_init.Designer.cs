@@ -10,7 +10,7 @@ using Rmis.Persistence;
 namespace Rmis.Persistance.Migrations
 {
     [DbContext(typeof(RmisDbContext))]
-    [Migration("20210711213538_init")]
+    [Migration("20210714101908_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,9 +71,6 @@ namespace Rmis.Persistance.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TrainNumber")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DirectionId");
@@ -109,12 +106,15 @@ namespace Rmis.Persistance.Migrations
                     b.Property<long?>("RouteId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("TrainDriver")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TrainNumber")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RouteId");
-
-                    b.HasIndex("Date", "RouteId")
-                        .IsUnique();
 
                     b.ToTable("Schedule");
                 });

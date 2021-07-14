@@ -10,7 +10,7 @@ using Rmis.Client.Persistence;
 namespace Rmis.Client.Persistence.Migrations
 {
     [DbContext(typeof(RmisClientDbContext))]
-    [Migration("20210713205213_init")]
+    [Migration("20210714104556_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,9 @@ namespace Rmis.Client.Persistence.Migrations
 
                     b.Property<string>("To")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TrainDriver")
                         .HasColumnType("text");
 
                     b.Property<string>("TrainNumber")

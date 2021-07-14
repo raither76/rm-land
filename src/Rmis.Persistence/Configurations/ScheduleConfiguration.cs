@@ -13,10 +13,6 @@ namespace Rmis.Persistence.Configurations
             builder.HasOne(s => s.Route)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
-
-            Schedule s;
-            builder.HasIndex(nameof(s.Date), nameof(Route) + "Id")
-                .IsUnique();
         }
     }
 }

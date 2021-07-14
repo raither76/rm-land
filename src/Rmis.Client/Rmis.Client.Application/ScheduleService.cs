@@ -24,7 +24,7 @@ namespace Rmis.Client.Application
             _appConfig = appConfig;
             _logger = logger;
         }
-    
+
         public IEnumerable<Schedule> GetSchedules()
         {
             throw new NotImplementedException();
@@ -37,12 +37,12 @@ namespace Rmis.Client.Application
                 using HttpClient client = new HttpClient();
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
-                    { "routeNumber", _appConfig.RouteNumber }
+                    {"trainNumber", _appConfig.TrainNumber}
                 };
 
                 string url = QueryHelpers.AddQueryString(_appConfig.RmisHubUrl, parameters);
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-            
+
                 HttpResponseMessage responseMessage = client.Send(requestMessage);
                 responseMessage.EnsureSuccessStatusCode();
 
@@ -57,40 +57,41 @@ namespace Rmis.Client.Application
             catch (Exception e)
             {
                 string message = $@"Не удалось получить актуальное расписание от центрального сервиса расписаний: 
-{nameof(_appConfig.RouteNumber)}={_appConfig.RouteNumber}, {nameof(_appConfig.RmisHubUrl)}={_appConfig.RmisHubUrl} 
+{nameof(_appConfig.TrainNumber)}={_appConfig.TrainNumber}, {nameof(_appConfig.RmisHubUrl)}={_appConfig.RmisHubUrl} 
 {Environment.NewLine}Детали: {Environment.NewLine}{Environment.NewLine}{e.Message}";
-                
+
                 _logger.LogError(e, message);
                 throw new Exception(message, e);
             }
         }
-        
+
         public void SyncSchedulesFromHub()
         {
             try
             {
                 //  Расписания загруженные с центрального сервера.
                 IEnumerable<ScheduleDto> schedules = this.GetSchedulesFromHub();
-                
+
                 DateTime fromDate = DateTime.Now.Date;
                 //  Расписания загруженные с локального сервера.
                 Dictionary<string, Schedule> scheduleByKey = _context.ScheduleRepository
-                        .Where(s => s.Date >= fromDate)
-                        .ToDictionary(k => k.GetKey());
+                    .Where(s => s.Date >= fromDate && s.TrainNumber == _appConfig.TrainNumber)
+                    .ToDictionary(k => k.GetKey());
 
                 foreach (ScheduleDto scheduleDto in schedules)
                 {
                     string uniqueScheduleKey = scheduleDto.GetKey();
-                    
+
                     if (!scheduleByKey.ContainsKey(uniqueScheduleKey))
                     {
                         #region Создание нового элемента
-                        
+
                         Schedule schedule = new Schedule()
                         {
                             Date = scheduleDto.Date,
                             RouteNumber = scheduleDto.RouteNumber,
                             TrainNumber = scheduleDto.TrainNumber,
+                            TrainDriver = scheduleDto.TrainDriver,
                             ArrivalDate = scheduleDto.ArrivalDate,
                             DepartureDate = scheduleDto.DepartureDate,
                             From = scheduleDto.From,
@@ -98,60 +99,77 @@ namespace Rmis.Client.Application
                             CreateDate = DateTimeOffset.Now,
                             ModifyDate = DateTimeOffset.Now
                         };
-                        
+
                         _context.ScheduleRepository.Add(schedule);
-                        
+
                         #endregion
                     }
                     else
                     {
                         #region Обновление существующего
-                        
+
                         Schedule schedule = scheduleByKey[uniqueScheduleKey];
-             
+
                         if (schedule.ArrivalDate != scheduleDto.ArrivalDate)
                         {
-                            _logger.LogInformation($"По маршруту номер \"{scheduleDto.RouteNumber}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {scheduleDto.ArrivalDate:dd.MM.yyyy hh:mm}");
+                            _logger.LogInformation($"Для поезда номер \"{scheduleDto.TrainNumber}\" была актуализирована дата прибытия. Старое значение: {schedule.ArrivalDate:dd.MM.yyyy hh:mm}. Новое значение: {scheduleDto.ArrivalDate:dd.MM.yyyy hh:mm}");
                             schedule.ArrivalDate = scheduleDto.ArrivalDate;
                         }
 
                         if (schedule.DepartureDate != scheduleDto.DepartureDate)
                         {
-                            _logger.LogInformation($"По маршруту номер \"{scheduleDto.RouteNumber}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {scheduleDto.DepartureDate:dd.MM.yyyy hh:mm}");
+                            _logger.LogInformation($"Для поезда номер \"{scheduleDto.TrainNumber}\" была актуализирована дата посадки. Старое значение: {schedule.DepartureDate:dd.MM.yyyy hh:mm}. Новое значение: {scheduleDto.DepartureDate:dd.MM.yyyy hh:mm}");
                             schedule.DepartureDate = scheduleDto.DepartureDate;
                         }
-                        
-                        if (schedule.TrainNumber != scheduleDto.TrainNumber)
+
+                        if (schedule.RouteNumber != scheduleDto.RouteNumber)
                         {
-                            _logger.LogInformation($"По маршруту номер \"{scheduleDto.RouteNumber}\" была актуализирован номер поезда. Старое значение: {schedule.TrainNumber}. Новое значение: {scheduleDto.TrainNumber}");
-                            schedule.TrainNumber = scheduleDto.TrainNumber;
+                            _logger.LogInformation($"Для поезда номер \"{scheduleDto.TrainNumber}\" была актуализирован номер маршрута. Старое значение: {schedule.RouteNumber}. Новое значение: {scheduleDto.RouteNumber}");
+                            schedule.RouteNumber = scheduleDto.RouteNumber;
                         }
-                        
+
                         if (schedule.From != scheduleDto.From)
                         {
-                            _logger.LogInformation($"По маршруту номер \"{scheduleDto.RouteNumber}\" была актуализирован пункт отправления. Старое значение: {schedule.From}. Новое значение: {scheduleDto.From}");
+                            _logger.LogInformation($"Для поезда номер \"{scheduleDto.RouteNumber}\" была актуализирован пункт отправления. Старое значение: {schedule.From}. Новое значение: {scheduleDto.From}");
                             schedule.From = scheduleDto.From;
                         }
-                        
+
                         if (schedule.To != scheduleDto.To)
                         {
-                            _logger.LogInformation($"По маршруту номер \"{scheduleDto.RouteNumber}\" была актуализирован пункт прибытия. Старое значение: {schedule.To}. Новое значение: {scheduleDto.To}");
+                            _logger.LogInformation($"Для поезда номер \"{scheduleDto.RouteNumber}\" была актуализирован пункт прибытия. Старое значение: {schedule.To}. Новое значение: {scheduleDto.To}");
                             schedule.To = scheduleDto.To;
                         }
-                        
+
                         #endregion
                     }
                 }
-                
+
                 _logger.LogInformation("Сохранение изменений ...");
                 _context.SaveChanges();
                 _logger.LogInformation("Изменения сохранены");
-                
+
                 _logger.LogInformation("Расписание синхронизировано");
             }
             catch (Exception e)
             {
                 throw new Exception("Ошибка в процессе обновления расписания поезда", e);
+            }
+        }
+
+        public Schedule GetCurrentSchedule()
+        {
+            try
+            {
+                Schedule result = _context.ScheduleRepository
+                    .Where(s => s.Date >= DateTime.Now.Date && s.TrainNumber == _appConfig.TrainNumber)
+                    .OrderBy(s => s.DepartureDate)
+                    .ToList()
+                    .FirstOrDefault(s => s.DepartureDate >= DateTimeOffset.Now);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Ошибка в процессе получения текущего расписания поезда", e);
             }
         }
     }

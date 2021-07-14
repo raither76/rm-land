@@ -18,7 +18,7 @@ namespace Rmis.Google.Sheets
         private static string[] Scopes = {SheetsService.Scope.SpreadsheetsReadonly};
         private const string _credentialFileName = "client_secret_service_account.json";
         private const string _sheetId = "1DxIvR6yd5XFxvNfkI1qtG5ClZKEXgjDz24bxfgwZ-V4";
-        private const string _dataRange = "Velaro!A2:J"; 
+        private const string _dataRange = "Velaro!A2:T"; 
 
         private readonly ILogger<GoogleSheetsScheduleProvider> _logger;
 
@@ -45,7 +45,7 @@ namespace Rmis.Google.Sheets
                 if (values != null)
                 {
                     result = values.Where(r => r[0] != null && !string.IsNullOrEmpty(r[0].ToString()) && r[3].ToString()?.Trim().Length == 3 && this.CreateDateFromString(r[0].ToString()) >= fromDate)
-                        .Select(r => this.CreateModelFromRow(r));
+                        .Select(r => this.CreateModelFromRow(r)).Where(s => s != null);
                 }
                 else
                     _logger.LogInformation("No data found.");
@@ -74,32 +74,47 @@ namespace Rmis.Google.Sheets
 
         private GoogleSchedule CreateModelFromRow(IList<object> row)
         {
-            if (row == null)
-                throw new ArgumentNullException(nameof(row));
-
-            string dateString = row[0]?.ToString();
-            DateTime date = this.CreateDateFromString(dateString);
-
-            string routeNumberString = row[3]?.ToString();
-            if (!int.TryParse(routeNumberString, out var routeNumber))
-                throw new InvalidCastException($"Не удалость преобразовать значение \"{routeNumberString}\" к целочисленному типу");
-
-            string departureTime = row[6]?.ToString();
-            string arrivalTime = row[7]?.ToString();
-
-            GoogleSchedule result = new GoogleSchedule
+            try
             {
-                Date = date,
-                Number = routeNumber,
-                TrainNumber = row[1]?.ToString(),
-                DepartureDate = this.ParseDateFromTime(date, departureTime),
-                ArrivalDate = this.ParseDateFromTime(date, arrivalTime)
-            };
+                if (row == null)
+                    throw new ArgumentNullException(nameof(row));
 
-            if (result.DepartureDate > result.ArrivalDate)  //  Если время прибытия выпадает на след день, то корректируем некорректно посчитанную дату, прибавляя 1 день.
-                result.ArrivalDate = result.ArrivalDate.AddDays(1);
+                string dateString = row[0]?.ToString();
+                DateTime date = this.CreateDateFromString(dateString);
 
-            return result;
+                string routeNumberString = row[3]?.ToString();
+                if (!int.TryParse(routeNumberString, out var routeNumber))
+                    throw new InvalidCastException($"Не удалость преобразовать значение \"{routeNumberString}\" к целочисленному типу");
+
+                string departureTime = row[6]?.ToString();
+                string arrivalTime = row[7]?.ToString();
+
+                string trainNumber = row[1].ToString();
+                if (string.IsNullOrEmpty(trainNumber))
+                    throw new Exception($"В оборотной ведомости не указан номер поезда по маршруту номер {routeNumberString} за дату {dateString}");
+
+                string trainDriver = row[19].ToString();
+                
+                GoogleSchedule result = new GoogleSchedule
+                {
+                    Date = date,
+                    Number = routeNumber,
+                    TrainNumber = trainNumber,
+                    DepartureDate = this.ParseDateFromTime(date, departureTime),
+                    ArrivalDate = this.ParseDateFromTime(date, arrivalTime),
+                    TrainDriver = trainDriver
+                };
+
+                if (result.DepartureDate > result.ArrivalDate)  //  Если время прибытия выпадает на след день, то корректируем некорректно посчитанную дату, прибавляя 1 день.
+                    result.ArrivalDate = result.ArrivalDate.AddDays(1);
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, e.Message);
+                return null;
+            }
         }
 
         private DateTimeOffset ParseDateFromTime(DateTime initialDate, string timeString)

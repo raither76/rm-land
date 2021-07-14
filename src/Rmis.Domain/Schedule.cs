@@ -12,14 +12,13 @@ namespace Rmis.Domain
 
         public Route Route { get; set; }
 
+        public string TrainDriver { get; set; }
+
+        public string TrainNumber { get; set; }
+
         /// <summary>
         /// Расписание синхронизировано с реестром.
         /// </summary>
         public bool IsSynchronized { get; set; }
-
-        public string GetKey()
-        {
-            return $"{this.Route.Number}_{this.Date:yyyy-MM-dd}";
-        }
     }
 }

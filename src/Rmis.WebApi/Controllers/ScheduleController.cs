@@ -51,11 +51,11 @@ namespace Rmis.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetSchedules(string routeNumber)
+        public IActionResult GetSchedules(string trainNumber)
         {
             try
             {
-                return this.Ok(_scheduleService.GetSchedulesByRouteNumber(routeNumber));
+                return this.Ok(_scheduleService.GetSchedulesByRouteNumber(trainNumber));
             }
             catch (Exception e)
             {
