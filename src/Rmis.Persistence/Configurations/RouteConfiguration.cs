@@ -13,6 +13,10 @@ namespace Rmis.Persistence.Configurations
             builder.HasOne(r => r.Direction)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(r => r.Stops)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

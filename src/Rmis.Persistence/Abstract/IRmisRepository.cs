@@ -4,12 +4,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Rmis.Persistence.Abstract
 {
     public interface IRmisRepository<T> : IQueryable<T> where T : class
     {
         IRmisRepository<T> Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath);
+
+        IIncludableQueryable<T, TProperty> IncludeNative<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath);
 
         IRmisRepository<T> Where(Expression<Func<T, bool>> predicate);
 

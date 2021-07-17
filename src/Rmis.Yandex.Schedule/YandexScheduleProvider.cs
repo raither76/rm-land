@@ -64,6 +64,43 @@ namespace Rmis.Yandex.Schedule
             }
         }
 
+        public YandexThread GetThread(string uid)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(uid))
+                    throw new ArgumentNullException(nameof(uid));
+            
+                using HttpClient client = new HttpClient();
+                Dictionary<string, string> parameters = new Dictionary<string, string>
+                {
+                    { "uid", uid },
+                    { "date", DateTime.Now.ToString("yyyy-MM-dd") }
+                };
+                
+                string url = QueryHelpers.AddQueryString(_config.ThreadUri, parameters);
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+                requestMessage.Headers.Add("Authorization", _config.ApiKey);
+                
+                HttpResponseMessage responseMessage = client.Send(requestMessage);
+                if (responseMessage.StatusCode == HttpStatusCode.BadRequest || responseMessage.StatusCode == HttpStatusCode.NotFound)
+                {
+                    YandexErrorResponse errorResponse = this.GetMessageData<YandexErrorResponse>(responseMessage);
+                    throw new YandexException(errorResponse);
+                }
+
+                responseMessage.EnsureSuccessStatusCode();
+                
+                YandexThread result = this.GetMessageData<YandexThread>(responseMessage);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($@"Не удалось получить данные о нитке от сервиса Ярдекс.Расписание по следущим параметрам: 
+{nameof(uid)}={uid}{Environment.NewLine}Детали: {Environment.NewLine}{Environment.NewLine}{e.Message}", e);
+            }
+        }
+
         private YandexApiResult<YandexSchedule> GetScheduleByDate(string fromYaStationCode, string toYaStationCode, string date, int offset, int limit)
         {
             try

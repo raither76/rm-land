@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Rmis.Persistence.Abstract;
 using Z.EntityFramework.Plus;
 
@@ -57,6 +58,11 @@ namespace Rmis.Persistence
         {
             var query = Query.Include(navigationPropertyPath);
             return new EfRepository<T>(_dbContext, query);
+        }
+
+        public IIncludableQueryable<T, TProperty> IncludeNative<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)
+        {
+            return Query.Include(navigationPropertyPath);
         }
 
         IRmisRepository<T> IRmisRepository<T>.Include<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath)

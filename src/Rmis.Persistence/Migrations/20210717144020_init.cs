@@ -60,6 +60,7 @@ namespace Rmis.Persistance.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Number = table.Column<int>(type: "integer", nullable: false),
+                    YaId = table.Column<string>(type: "text", nullable: true),
                     DirectionId = table.Column<long>(type: "bigint", nullable: true),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
@@ -102,6 +103,36 @@ namespace Rmis.Persistance.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Stop",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Duration = table.Column<double>(type: "double precision", nullable: false),
+                    StationId = table.Column<long>(type: "bigint", nullable: true),
+                    StopTime = table.Column<double>(type: "double precision", nullable: true),
+                    RouteId = table.Column<long>(type: "bigint", nullable: true),
+                    CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stop", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stop_Route_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Route",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Stop_Station_StationId",
+                        column: x => x.StationId,
+                        principalTable: "Station",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Direction_FromStationId",
                 table: "Direction",
@@ -121,12 +152,25 @@ namespace Rmis.Persistance.Migrations
                 name: "IX_Schedule_RouteId",
                 table: "Schedule",
                 column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stop_RouteId",
+                table: "Stop",
+                column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stop_StationId",
+                table: "Stop",
+                column: "StationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Schedule");
+
+            migrationBuilder.DropTable(
+                name: "Stop");
 
             migrationBuilder.DropTable(
                 name: "Route");

@@ -17,7 +17,6 @@ namespace Rmis.Persistence
         {
         }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -37,8 +36,9 @@ namespace Rmis.Persistence
         }
 
         public IScheduleRepository ScheduleRepository => new ScheduleRepository(this);
-        public IRmisRepository<Route> RouteRepository => new EfRepository<Route>(this, false);
+        public IRouteRepository RouteRepository => new RouteRepository(this);
         public IRmisRepository<Station> StationRepository => new EfRepository<Station>(this, false);
         public IDirectionRepository DirectionRepository => new DirectionRepository(this);
+        public IRmisRepository<Stop> StopRepository => new EfRepository<Stop>(this, false);
     }
 }

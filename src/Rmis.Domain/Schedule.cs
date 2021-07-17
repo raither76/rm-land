@@ -20,5 +20,10 @@ namespace Rmis.Domain
         /// Расписание синхронизировано с реестром.
         /// </summary>
         public bool IsSynchronized { get; set; }
+
+        public string GetKey()
+        {
+            return $"{this.Route?.Number}_{this.Date:yyyy-MM-dd}";
+        }
     }
 }

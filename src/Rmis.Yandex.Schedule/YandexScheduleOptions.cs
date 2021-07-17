@@ -6,6 +6,8 @@
 
         public string ScheduleUri { get; init; }
 
+        public string ThreadUri { get; init; }
+
         public int Limit { get; init; }
 
         public int ScheduledDaysCount { get; init; }

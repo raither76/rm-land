@@ -69,6 +69,9 @@ namespace Rmis.Persistance.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("integer");
 
+                    b.Property<string>("YaId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DirectionId");
@@ -141,6 +144,40 @@ namespace Rmis.Persistance.Migrations
                     b.ToTable("Station");
                 });
 
+            modelBuilder.Entity("Rmis.Domain.Stop", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Duration")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset>("ModifyDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("RouteId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("StationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<double?>("StopTime")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.HasIndex("StationId");
+
+                    b.ToTable("Stop");
+                });
+
             modelBuilder.Entity("Rmis.Domain.Direction", b =>
                 {
                     b.HasOne("Rmis.Domain.Station", "FromStation")
@@ -176,6 +213,25 @@ namespace Rmis.Persistance.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Route");
+                });
+
+            modelBuilder.Entity("Rmis.Domain.Stop", b =>
+                {
+                    b.HasOne("Rmis.Domain.Route", null)
+                        .WithMany("Stops")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Rmis.Domain.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId");
+
+                    b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("Rmis.Domain.Route", b =>
+                {
+                    b.Navigation("Stops");
                 });
 #pragma warning restore 612, 618
         }

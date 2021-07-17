@@ -1,0 +1,11 @@
+﻿namespace Rmis.Yandex.Schedule
+{
+    public class YaStop
+    {
+        public double duration { get; set; }
+
+        public double? stop_time { get; set; }
+
+        public YandexStation station { get; set; }
+    }
+}

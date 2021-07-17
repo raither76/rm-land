@@ -1,4 +1,6 @@
-﻿namespace Rmis.Yandex.Schedule
+﻿using System.Collections.Generic;
+
+namespace Rmis.Yandex.Schedule
 {
     public class YandexThread
     {
@@ -6,9 +8,13 @@
 
         public string title { get; set; }
 
+        public string uid { get; set; }
+
         public YandexCarrier carrier { get; set; }
 
         public string transport_type { get; set; }
+
+        public List<YaStop> stops { get; set; }
 
         /// <summary>
         /// Получение первых 3-х цифрм номера маршрута, для соответствия с тем что в реестре.
