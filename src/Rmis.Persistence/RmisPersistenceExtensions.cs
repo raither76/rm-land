@@ -11,7 +11,9 @@ namespace Rmis.Persistence
         {
             string connectionString = configuration.GetConnectionString("RmisDbContext");
             services.AddEntityFrameworkNpgsql()
-                .AddDbContext<RmisDbContext>(options => options.UseNpgsql(connectionString));
+                .AddDbContext<RmisDbContext>((provider, options) => options
+                    .UseInternalServiceProvider(provider)
+                    .UseNpgsql(connectionString));
 
             services.AddScoped<IRmisDbContext, RmisDbContext>();
             

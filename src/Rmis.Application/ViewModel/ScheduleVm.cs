@@ -40,7 +40,7 @@ namespace Rmis.Application
                 TrainDriver = schedule.TrainDriver,
                 From = schedule.Route?.Direction?.FromStation?.DisplayName,
                 To = schedule.Route?.Direction?.ToStation?.DisplayName,
-                Stops = schedule.Route?.Stops.Select(StopVm.CreateFrom).ToList()
+                Stops = schedule.Route?.Stops.Select(s => StopVm.CreateFrom(s, schedule.Route)).ToList()
             };
         }
     }

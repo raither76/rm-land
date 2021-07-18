@@ -40,5 +40,6 @@ namespace Rmis.Persistence
         public IRmisRepository<Station> StationRepository => new EfRepository<Station>(this, false);
         public IDirectionRepository DirectionRepository => new DirectionRepository(this);
         public IRmisRepository<Stop> StopRepository => new EfRepository<Stop>(this, false);
+        public IRmisRepository<TrackInfo> TrackInfoRepository => new EfRepository<TrackInfo>(this, false);
     }
 }

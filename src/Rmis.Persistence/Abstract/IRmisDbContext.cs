@@ -9,5 +9,6 @@ namespace Rmis.Persistence.Abstract
         IRmisRepository<Station> StationRepository { get; }
         IDirectionRepository DirectionRepository { get; }
         IRmisRepository<Stop> StopRepository { get; }
+        IRmisRepository<TrackInfo> TrackInfoRepository { get; }
     }
 }

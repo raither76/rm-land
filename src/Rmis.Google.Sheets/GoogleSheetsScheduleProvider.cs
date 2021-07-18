@@ -9,6 +9,7 @@ using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Util.Store;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rmis.Google.Sheets.Abstract;
 
 namespace Rmis.Google.Sheets
@@ -16,15 +17,15 @@ namespace Rmis.Google.Sheets
     public class GoogleSheetsScheduleProvider : IGoogleSheetsScheduleProvider
     {
         private static string[] Scopes = {SheetsService.Scope.SpreadsheetsReadonly};
-        private const string _credentialFileName = "client_secret_service_account.json";
-        private const string _sheetId = "1DxIvR6yd5XFxvNfkI1qtG5ClZKEXgjDz24bxfgwZ-V4";
         private const string _dataRange = "Velaro!A2:T"; 
 
         private readonly ILogger<GoogleSheetsScheduleProvider> _logger;
+        private readonly GoogleSheetsConfig _config;
 
-        public GoogleSheetsScheduleProvider(ILogger<GoogleSheetsScheduleProvider> logger)
+        public GoogleSheetsScheduleProvider(ILogger<GoogleSheetsScheduleProvider> logger, GoogleSheetsConfig options)
         {
             _logger = logger;
+            _config = options;
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace Rmis.Google.Sheets
                 IEnumerable<GoogleSchedule> result = new List<GoogleSchedule>();
                 SpreadsheetsResource.ValuesResource serviceValues = this.GetSheetsService().Spreadsheets.Values;
 
-                SpreadsheetsResource.ValuesResource.GetRequest request = serviceValues.Get(_sheetId, _dataRange);
+                SpreadsheetsResource.ValuesResource.GetRequest request = serviceValues.Get(_config.SheetId, _dataRange);
 
                 ValueRange response = request.Execute();
                 IList<IList<Object>> values = response.Values;
@@ -61,7 +62,10 @@ namespace Rmis.Google.Sheets
 
         private SheetsService GetSheetsService()
         {
-            using (var stream = new FileStream(_credentialFileName, FileMode.Open, FileAccess.Read))
+            if (!File.Exists(_config.CredentialFileName))
+                throw new FileNotFoundException(_config.CredentialFileName);
+            
+            using (var stream = new FileStream(_config.CredentialFileName, FileMode.Open, FileAccess.Read))
             {
                 BaseClientService.Initializer serviceInitializer = new BaseClientService.Initializer
                 {

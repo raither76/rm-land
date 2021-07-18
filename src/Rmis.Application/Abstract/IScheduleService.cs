@@ -11,5 +11,9 @@ namespace Rmis.Application.Abstract
         void SyncSchedulesFromGoogle();
 
         IEnumerable<ScheduleVm> GetSchedulesByTrainNumber(string trainNumber);
+
+        void SaveTrackInfo(TrackInfoDto trackInfoDto);
+
+        TrackInfoDto GetLastTrackInfo(string trainNumber);
     }
 }

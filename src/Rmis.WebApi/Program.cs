@@ -92,7 +92,6 @@ namespace Rmis.WebApi
 #endif
             var config = GetApplicationConfig(environment);
             
-            
             return WebHost.CreateDefaultBuilder()
                 .UseEnvironment(environment)
                 .ConfigureServices(services =>
@@ -102,7 +101,7 @@ namespace Rmis.WebApi
                     services.AddRmisPersistence(config);
                     services.AddRmisApplication();
                     services.AddRmisYandexSchedule(config);
-                    services.AddRmisGoogleGoogleSheets();
+                    services.AddRmisGoogleGoogleSheets(config);
                 })
                 .UseConfiguration(config)
                 .UseContentRoot(contentRootPath)
