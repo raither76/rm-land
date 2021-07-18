@@ -93,7 +93,7 @@ namespace Rmis.Google.Sheets
                 if (string.IsNullOrEmpty(trainNumber))
                     throw new Exception($"В оборотной ведомости не указан номер поезда по маршруту номер {routeNumberString} за дату {dateString}");
 
-                string trainDriver = row[19].ToString();
+                string trainDriver = row.Count >= 18 ? row[19].ToString() : null;
                 
                 GoogleSchedule result = new GoogleSchedule
                 {

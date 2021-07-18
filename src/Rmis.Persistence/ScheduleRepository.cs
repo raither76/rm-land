@@ -17,7 +17,7 @@ namespace Rmis.Persistence
         {
             return this.Include(s => s.Route)
                 .Include(s => s.Route.Direction)
-                .Where(s => s.Route.Direction.Id == directionId && !s.IsSynchronized && s.Date >= fromDate);
+                .Where(s => s.Route.Direction.Id == directionId && s.Date >= fromDate);
         }
         
         public IQueryable<Schedule> GetAllByFromDate(DateTime fromDate)
@@ -33,6 +33,8 @@ namespace Rmis.Persistence
                 .Include(s => s.Route.Direction)
                 .Include(s => s.Route.Direction.FromStation)
                 .Include(s => s.Route.Direction.ToStation)
+                .IncludeNative(s => s.Route.Stops)
+                .ThenInclude(s => s.Station)
                 .Where(s => s.TrainNumber == trainNumber && s.Date >= DateTime.Now.Date);
         }
 

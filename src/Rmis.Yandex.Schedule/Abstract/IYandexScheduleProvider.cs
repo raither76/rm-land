@@ -7,6 +7,6 @@ namespace Rmis.Yandex.Schedule.Abstract
     {
         IEnumerable<YandexSchedule> GetSchedules(string fromYaStationCode, string toYaStationCode, DateTime fromDate);
 
-        YandexThread GetThread(string uid);
+        YandexThread GetThread(string uid, string yaDate);
     }
 }

@@ -10,6 +10,6 @@ namespace Rmis.Application.Abstract
 
         void SyncSchedulesFromGoogle();
 
-        IEnumerable<ScheduleVm> GetSchedulesByRouteNumber(string trainNumber);
+        IEnumerable<ScheduleVm> GetSchedulesByTrainNumber(string trainNumber);
     }
 }

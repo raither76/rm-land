@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Rmis.Domain;
 
 namespace Rmis.Application
@@ -21,6 +23,8 @@ namespace Rmis.Application
         
         public string TrainDriver { get; set; }
 
+        public List<StopVm> Stops { get; set; }
+
         public static ScheduleVm CreateFrom(Schedule schedule)
         {
             if (schedule == null)
@@ -35,7 +39,8 @@ namespace Rmis.Application
                 TrainNumber = schedule.TrainNumber,
                 TrainDriver = schedule.TrainDriver,
                 From = schedule.Route?.Direction?.FromStation?.DisplayName,
-                To = schedule.Route?.Direction?.ToStation?.DisplayName
+                To = schedule.Route?.Direction?.ToStation?.DisplayName,
+                Stops = schedule.Route?.Stops.Select(StopVm.CreateFrom).ToList()
             };
         }
     }

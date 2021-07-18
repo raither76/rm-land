@@ -55,7 +55,7 @@ namespace Rmis.WebApi.Controllers
         {
             try
             {
-                return this.Ok(_scheduleService.GetSchedulesByRouteNumber(trainNumber));
+                return this.Ok(_scheduleService.GetSchedulesByTrainNumber(trainNumber));
             }
             catch (Exception e)
             {

@@ -64,7 +64,7 @@ namespace Rmis.Yandex.Schedule
             }
         }
 
-        public YandexThread GetThread(string uid)
+        public YandexThread GetThread(string uid, string yaDate)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace Rmis.Yandex.Schedule
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "uid", uid },
-                    { "date", DateTime.Now.ToString("yyyy-MM-dd") }
+                    { "date", yaDate }
                 };
                 
                 string url = QueryHelpers.AddQueryString(_config.ThreadUri, parameters);
