@@ -10,7 +10,7 @@ using Rmis.Persistence;
 namespace Rmis.Persistance.Migrations
 {
     [DbContext(typeof(RmisDbContext))]
-    [Migration("20210717144020_init")]
+    [Migration("20210718170114_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,6 +178,40 @@ namespace Rmis.Persistance.Migrations
                     b.HasIndex("StationId");
 
                     b.ToTable("Stop");
+                });
+
+            modelBuilder.Entity("Rmis.Domain.TrackInfo", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset>("ModifyDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double?>("Speed")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("TrainNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrackInfo");
                 });
 
             modelBuilder.Entity("Rmis.Domain.Direction", b =>

@@ -25,6 +25,25 @@ namespace Rmis.Persistance.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrackInfo",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Speed = table.Column<double>(type: "double precision", nullable: true),
+                    TrainNumber = table.Column<string>(type: "text", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackInfo", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Direction",
                 columns: table => new
                 {
@@ -171,6 +190,9 @@ namespace Rmis.Persistance.Migrations
 
             migrationBuilder.DropTable(
                 name: "Stop");
+
+            migrationBuilder.DropTable(
+                name: "TrackInfo");
 
             migrationBuilder.DropTable(
                 name: "Route");
