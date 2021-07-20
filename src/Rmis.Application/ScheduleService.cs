@@ -112,6 +112,8 @@ namespace Rmis.Application
                             stop.Duration = yaStop.duration;
                             stop.StopTime = yaStop.stop_time;
                             stop.ModifyDate = DateTimeOffset.Now;;
+                            stop.DepartureDate = yaStop.departure == null ? null : DateTimeOffset.Parse(yaStop.departure);
+                            stop.ArrivalDate = yaStop.arrival == null ? null : DateTimeOffset.Parse(yaStop.arrival);
                             
                             Station station = null;
                             if (stationByYaCode.ContainsKey(yaStop.station.code))

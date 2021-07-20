@@ -10,7 +10,7 @@ using Rmis.Persistence;
 namespace Rmis.Persistance.Migrations
 {
     [DbContext(typeof(RmisDbContext))]
-    [Migration("20210718170114_init")]
+    [Migration("20210720184935_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -153,7 +153,13 @@ namespace Rmis.Persistance.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTimeOffset?>("ArrivalDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DepartureDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<double>("Duration")

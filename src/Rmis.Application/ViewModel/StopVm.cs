@@ -13,6 +13,10 @@ namespace Rmis.Application
 
         public string Code { get; set; }
 
+        public DateTimeOffset? DepartureDate { get; set; }
+        
+        public DateTimeOffset? ArrivalDate { get; set; }
+
         public static StopVm CreateFrom(Stop stop, Route route)
         {
             if (stop == null)
@@ -26,6 +30,8 @@ namespace Rmis.Application
                 Duration = stop.Duration,
                 StopTime = stop.StopTime,
                 DisplayName = stop.Station?.DisplayName,
+                DepartureDate = stop.DepartureDate,
+                ArrivalDate = stop.ArrivalDate,
                 Code = $"{route.Number}_{stop.Station?.YaCode}"
             };
         }

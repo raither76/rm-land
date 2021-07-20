@@ -151,7 +151,13 @@ namespace Rmis.Persistance.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTimeOffset?>("ArrivalDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DepartureDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<double>("Duration")

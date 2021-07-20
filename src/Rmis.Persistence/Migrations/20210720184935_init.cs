@@ -131,6 +131,8 @@ namespace Rmis.Persistance.Migrations
                     Duration = table.Column<double>(type: "double precision", nullable: false),
                     StationId = table.Column<long>(type: "bigint", nullable: true),
                     StopTime = table.Column<double>(type: "double precision", nullable: true),
+                    ArrivalDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    DepartureDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     RouteId = table.Column<long>(type: "bigint", nullable: true),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
