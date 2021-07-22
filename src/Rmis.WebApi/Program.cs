@@ -16,6 +16,7 @@ using NLog.Web;
 using NLog.Extensions.Logging;
 using Rmis.Application;
 using Rmis.Google.Sheets;
+using Rmis.OpenWeather;
 using Rmis.Persistence;
 using Rmis.Persistence.Abstract;
 using Rmis.Yandex.Schedule;
@@ -97,11 +98,12 @@ namespace Rmis.WebApi
                 .ConfigureServices(services =>
                 {
                     services.AddControllers();
-                    services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Rmis.WebApi", Version = "v1"}); });
-                    services.AddRmisPersistence(config);
-                    services.AddRmisApplication();
-                    services.AddRmisYandexSchedule(config);
-                    services.AddRmisGoogleGoogleSheets(config);
+                    services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Rmis.WebApi", Version = "v1"}); })
+                        .AddRmisPersistence(config)
+                        .AddRmisApplication()
+                        .AddRmisYandexSchedule(config)
+                        .AddRmisGoogleGoogleSheets(config)
+                        .AddRmisOpenWeather(config);
                 })
                 .UseConfiguration(config)
                 .UseContentRoot(contentRootPath)

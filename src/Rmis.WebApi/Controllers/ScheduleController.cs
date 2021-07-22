@@ -96,5 +96,19 @@ namespace Rmis.WebApi.Controllers
                 return this.BadRequest(e.Message);
             }
         }
+
+        [HttpPost("[action]")]
+        public IActionResult SyncWeatherInfo()
+        {
+            try
+            {
+                _scheduleService.SyncWeatherInfo();
+                return this.Ok("Данные о погоде обновлены");
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
     }
 }

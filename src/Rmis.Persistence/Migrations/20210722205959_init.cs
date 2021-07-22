@@ -16,6 +16,7 @@ namespace Rmis.Persistance.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     YaCode = table.Column<string>(type: "text", nullable: true),
                     DisplayName = table.Column<string>(type: "text", nullable: true),
+                    TemperatureC = table.Column<decimal>(type: "numeric", nullable: true),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },

@@ -15,5 +15,7 @@ namespace Rmis.Application.Abstract
         void SaveTrackInfo(TrackInfoDto trackInfoDto);
 
         TrackInfoDto GetLastTrackInfo(string trainNumber);
+
+        void SyncWeatherInfo();
     }
 }

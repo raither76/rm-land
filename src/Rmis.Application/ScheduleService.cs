@@ -7,6 +7,7 @@ using Rmis.Application.Abstract;
 using Rmis.Domain;
 using Rmis.Google.Sheets;
 using Rmis.Google.Sheets.Abstract;
+using Rmis.OpenWeather;
 using Rmis.Persistence.Abstract;
 using Rmis.Yandex.Schedule;
 using Rmis.Yandex.Schedule.Abstract;
@@ -19,13 +20,15 @@ namespace Rmis.Application
         private readonly IRmisDbContext _context;
         private readonly ILogger<ScheduleService> _logger;
         private readonly IGoogleSheetsScheduleProvider _googleScheduleProvider;
+        private readonly IOpenWeatherProvider _openWeatherProvider;
 
-        public ScheduleService(IYandexScheduleProvider scheduleProvider, IRmisDbContext context, ILogger<ScheduleService> logger, IGoogleSheetsScheduleProvider googleScheduleProvider)
+        public ScheduleService(IYandexScheduleProvider scheduleProvider, IRmisDbContext context, ILogger<ScheduleService> logger, IGoogleSheetsScheduleProvider googleScheduleProvider, IOpenWeatherProvider openWeatherProvider)
         {
             _scheduleProvider = scheduleProvider;
             _context = context;
             _logger = logger;
             _googleScheduleProvider = googleScheduleProvider;
+            _openWeatherProvider = openWeatherProvider;
         }
 
         public void SyncSchedulesFromYandex()
@@ -408,6 +411,27 @@ namespace Rmis.Application
             catch (Exception e)
             {
                 string message = $"Ошибка при получении информации о текущеем местоположении поезда номер: {trainNumber}";
+                _logger.LogError(e, message);
+                throw new Exception(message, e);
+            }
+        }
+        
+        public void SyncWeatherInfo()
+        {
+            try
+            {
+                foreach (Station station in _context.StationRepository)
+                {
+                    MainWeatherInfo weatherInfoByCity = _openWeatherProvider.GetWeatherInfoByCity(station.DisplayName);
+                    if(weatherInfoByCity != null)
+                        station.TemperatureC = weatherInfoByCity.temp;
+                }
+
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                string message = $"Ошибка при получении текущей информации о погоде";
                 _logger.LogError(e, message);
                 throw new Exception(message, e);
             }

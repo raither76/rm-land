@@ -136,6 +136,9 @@ namespace Rmis.Persistance.Migrations
                     b.Property<DateTimeOffset>("ModifyDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("TemperatureC")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("YaCode")
                         .HasColumnType("text");
 

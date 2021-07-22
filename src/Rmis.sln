@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Yandex.Schedule", "Rmi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.Google.Sheets", "Rmis.Google.Sheets\Rmis.Google.Sheets.csproj", "{481D63E1-D797-48B4-B8AA-0506439DC4BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rmis.OpenWeather", "Rmis.OpenWeather\Rmis.OpenWeather.csproj", "{6112E9E3-C6E8-4D90-BBBF-C4CD2E5FEB12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{481D63E1-D797-48B4-B8AA-0506439DC4BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6112E9E3-C6E8-4D90-BBBF-C4CD2E5FEB12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6112E9E3-C6E8-4D90-BBBF-C4CD2E5FEB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6112E9E3-C6E8-4D90-BBBF-C4CD2E5FEB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6112E9E3-C6E8-4D90-BBBF-C4CD2E5FEB12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

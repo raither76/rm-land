@@ -5,5 +5,7 @@
         public string YaCode { get; set; }
 
         public string DisplayName { get; set; }
+
+        public decimal? TemperatureC { get; set; }
     }
 }
