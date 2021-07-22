@@ -17,7 +17,7 @@ namespace Rmis.Google.Sheets
     public class GoogleSheetsScheduleProvider : IGoogleSheetsScheduleProvider
     {
         private static string[] Scopes = {SheetsService.Scope.SpreadsheetsReadonly};
-        private const string _dataRange = "Velaro!A2:T"; 
+        private const string _dataRange = "Velaro!A2:K"; 
 
         private readonly ILogger<GoogleSheetsScheduleProvider> _logger;
         private readonly GoogleSheetsConfig _config;
@@ -90,14 +90,14 @@ namespace Rmis.Google.Sheets
                 if (!int.TryParse(routeNumberString, out var routeNumber))
                     throw new InvalidCastException($"Не удалость преобразовать значение \"{routeNumberString}\" к целочисленному типу");
 
-                string departureTime = row[6]?.ToString();
-                string arrivalTime = row[7]?.ToString();
+                string departureTime = row[5]?.ToString();
+                string arrivalTime = row[6]?.ToString();
 
                 string trainNumber = row[1].ToString();
                 if (string.IsNullOrEmpty(trainNumber))
                     throw new Exception($"В оборотной ведомости не указан номер поезда по маршруту номер {routeNumberString} за дату {dateString}");
 
-                string trainDriver = row.Count >= 18 ? row[19].ToString() : null;
+                string trainDriver = row.Count >= 11 ? row[10].ToString() : null;
                 
                 GoogleSchedule result = new GoogleSchedule
                 {
