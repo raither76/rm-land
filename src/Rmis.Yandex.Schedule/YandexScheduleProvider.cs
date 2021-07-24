@@ -71,27 +71,13 @@ namespace Rmis.Yandex.Schedule
                 if (string.IsNullOrEmpty(uid))
                     throw new ArgumentNullException(nameof(uid));
             
-                using HttpClient client = new HttpClient();
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "uid", uid },
                     { "date", yaDate }
                 };
-                
-                string url = QueryHelpers.AddQueryString(_config.ThreadUri, parameters);
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-                requestMessage.Headers.Add("Authorization", _config.ApiKey);
-                
-                HttpResponseMessage responseMessage = client.Send(requestMessage);
-                if (responseMessage.StatusCode == HttpStatusCode.BadRequest || responseMessage.StatusCode == HttpStatusCode.NotFound)
-                {
-                    YandexErrorResponse errorResponse = this.GetMessageData<YandexErrorResponse>(responseMessage);
-                    throw new YandexException(errorResponse);
-                }
 
-                responseMessage.EnsureSuccessStatusCode();
-                
-                YandexThread result = this.GetMessageData<YandexThread>(responseMessage);
+                YandexThread result = this.GetDataFromYandex<YandexThread>(_config.ThreadUri, parameters);
                 return result;
             }
             catch (Exception e)
@@ -105,7 +91,6 @@ namespace Rmis.Yandex.Schedule
         {
             try
             {
-                using HttpClient client = new HttpClient();
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "lang", "ru_RU"},
@@ -116,21 +101,8 @@ namespace Rmis.Yandex.Schedule
                     { "offset", offset.ToString() },
                     { "limit", limit.ToString() }
                 };
-
-                string url = QueryHelpers.AddQueryString(_config.ScheduleUri, parameters);
-                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-                requestMessage.Headers.Add("Authorization", _config.ApiKey);
-
-                HttpResponseMessage responseMessage = client.Send(requestMessage);
-                if (responseMessage.StatusCode == HttpStatusCode.BadRequest || responseMessage.StatusCode == HttpStatusCode.NotFound)
-                {
-                    YandexErrorResponse errorResponse = this.GetMessageData<YandexErrorResponse>(responseMessage);
-                    throw new YandexException(errorResponse);
-                }
-
-                responseMessage.EnsureSuccessStatusCode();
                 
-                YandexApiResult<YandexSchedule> result = this.GetMessageData<YandexApiResult<YandexSchedule>>(responseMessage);
+                YandexApiResult<YandexSchedule> result = this.GetDataFromYandex<YandexApiResult<YandexSchedule>>(_config.ScheduleUri, parameters);
                 return result;
             }
             catch (Exception e)
@@ -150,6 +122,49 @@ namespace Rmis.Yandex.Schedule
             T data = JsonSerializer.DeserializeAsync<T>(stream).Result;
             
             return data;
+        }
+
+        private TResponse GetDataFromYandex<TResponse>(string url, Dictionary<string, string> parameters = null)
+        {
+            using HttpClient client = new HttpClient();
+
+            if(parameters != null)
+                url = QueryHelpers.AddQueryString(url, parameters);
+            
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            requestMessage.Headers.Add("Authorization", _config.ApiKey);
+
+            HttpResponseMessage responseMessage = client.Send(requestMessage);
+            if (responseMessage.StatusCode == HttpStatusCode.BadRequest || responseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                YandexErrorResponse errorResponse = this.GetMessageData<YandexErrorResponse>(responseMessage);
+                throw new YandexException(errorResponse);
+            }
+
+            responseMessage.EnsureSuccessStatusCode();
+                
+            TResponse result = this.GetMessageData<TResponse>(responseMessage);
+            return result;
+        }
+
+        public IEnumerable<YandexStation> GetAllStations()
+        {
+            try
+            {
+                YandexAllStationsResponse response = this.GetDataFromYandex<YandexAllStationsResponse>(_config.AllStationsUri);
+
+                //  Смотрим только по России.
+                string russianYaCoutryCode = "l225";
+                string transportType = "train";
+                return response.countries.Where(c => c.codes.yandex_code == russianYaCoutryCode)
+                        .SelectMany(c => c.regions.SelectMany(r => r.settlements.SelectMany(s => s.stations))).Where(s => s.transport_type == transportType);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($@"Ошибка при получении списка всех станций: 
+{nameof(_config.AllStationsUri)}={_config.AllStationsUri} 
+{Environment.NewLine}Детали: {Environment.NewLine}{Environment.NewLine}{e.Message}", e);
+            }
         }
     }
 }

@@ -8,6 +8,8 @@
 
         public string ThreadUri { get; init; }
 
+        public string AllStationsUri { get; init; }
+
         public int Limit { get; init; }
 
         public int ScheduledDaysCount { get; init; }

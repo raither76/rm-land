@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,20 @@ namespace Rmis.Application
             _googleScheduleProvider = googleScheduleProvider;
             _openWeatherProvider = openWeatherProvider;
         }
+
+        private Dictionary<string, YandexStation> _allYandexStations;
+
+        private Dictionary<string, YandexStation> AllYandexStations
+        {
+            get
+            {
+                if (_allYandexStations == null)
+                    _allYandexStations = _scheduleProvider.GetAllStations().ToDictionary(k => k.codes.yandex_code);
+
+                return _allYandexStations;
+            }
+        }
+        
 
         public void SyncSchedulesFromYandex()
         {
@@ -134,6 +149,16 @@ namespace Rmis.Application
 
                             station.DisplayName = yaStop.station.title;
                             station.ModifyDate = DateTimeOffset.Now;
+                            if (station.Latitude == 0)
+                            {
+                                //  Получение координат из сервиса яндекс.
+                                if (!this.AllYandexStations.ContainsKey(station.YaCode))
+                                    throw new Exception($"Не удалось получить данные о станции из сервиса Яндекс.Расписание по коду: {station.YaCode}");
+
+                                YandexStation yaStation = this.AllYandexStations[station.YaCode];
+                                station.Latitude = double.Parse(yaStation.latitude.ToString(), CultureInfo.InvariantCulture);
+                                station.Longitude = double.Parse(yaStation.longitude.ToString(), CultureInfo.InvariantCulture);
+                            }
 
                             if(stop.Station?.Id == 0 || stop.Station?.Id != station.Id)
                                 stop.Station = station;
@@ -422,9 +447,14 @@ namespace Rmis.Application
             {
                 foreach (Station station in _context.StationRepository)
                 {
-                    MainWeatherInfo weatherInfoByCity = _openWeatherProvider.GetWeatherInfoByCity(station.DisplayName);
-                    if(weatherInfoByCity != null)
-                        station.TemperatureC = weatherInfoByCity.temp;
+                    WeatherResponse weatherResponse = _openWeatherProvider.GetWeatherInfoByGeo(station.Latitude, station.Longitude);
+                    if (weatherResponse != null)
+                    {
+                        station.TemperatureC = weatherResponse.main.temp;
+                        station.WindSpeed = weatherResponse.wind.speed;
+                        station.WindDirectionDeg = weatherResponse.wind.deg;
+                        station.WeatherDescription = weatherResponse.weather[0].main;
+                    }
                 }
 
                 _context.SaveChanges();

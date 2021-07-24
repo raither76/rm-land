@@ -21,12 +21,15 @@ namespace Rmis.OpenWeather
             _config = options.Value;
         }
 
-        public MainWeatherInfo GetWeatherInfoByCity(string city)
+        public WeatherResponse GetWeatherInfoByGeo(double latitude, double longitude)
         {
             try
             {
-                if (string.IsNullOrEmpty(city))
-                    throw new ArgumentNullException(nameof(city));
+                if (latitude == 0)
+                    throw new ArgumentNullException(nameof(latitude));
+                
+                if (longitude == 0)
+                    throw new ArgumentNullException(nameof(longitude));
                 
                 using HttpClient client = new HttpClient();
                 Dictionary<string, string> parameters = new Dictionary<string, string>
@@ -34,7 +37,8 @@ namespace Rmis.OpenWeather
                     { "appid", _config.ApiKey },
                     { "units", "metric" },
                     { "lang", "ru" },
-                    { "q", city }
+                    { "lon", longitude.ToString() },
+                    { "lat", latitude.ToString() }
                 };
                 
                 string url = QueryHelpers.AddQueryString(_config.Uri, parameters);
@@ -45,7 +49,7 @@ namespace Rmis.OpenWeather
                 responseMessage.EnsureSuccessStatusCode();
                 
                 WeatherResponse result = this.GetMessageData<WeatherResponse>(responseMessage);
-                return result?.main;
+                return result;
             }
             catch (Exception e)
             {

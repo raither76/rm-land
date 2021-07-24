@@ -17,6 +17,11 @@ namespace Rmis.Persistance.Migrations
                     YaCode = table.Column<string>(type: "text", nullable: true),
                     DisplayName = table.Column<string>(type: "text", nullable: true),
                     TemperatureC = table.Column<decimal>(type: "numeric", nullable: true),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    WindSpeed = table.Column<decimal>(type: "numeric", nullable: false),
+                    WindDirectionDeg = table.Column<int>(type: "integer", nullable: false),
+                    WeatherDescription = table.Column<string>(type: "text", nullable: true),
                     CreateDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },

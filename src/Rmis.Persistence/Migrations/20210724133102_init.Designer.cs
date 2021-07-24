@@ -10,7 +10,7 @@ using Rmis.Persistence;
 namespace Rmis.Persistance.Migrations
 {
     [DbContext(typeof(RmisDbContext))]
-    [Migration("20210722205959_init")]
+    [Migration("20210724133102_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,10 +135,25 @@ namespace Rmis.Persistance.Migrations
                     b.Property<string>("DisplayName")
                         .HasColumnType("text");
 
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTimeOffset>("ModifyDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("TemperatureC")
+                    b.Property<decimal?>("TemperatureC")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("WeatherDescription")
+                        .HasColumnType("text");
+
+                    b.Property<int>("WindDirectionDeg")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("WindSpeed")
                         .HasColumnType("numeric");
 
                     b.Property<string>("YaCode")

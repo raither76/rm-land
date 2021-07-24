@@ -2,6 +2,6 @@
 {
     public interface IOpenWeatherProvider
     {
-        MainWeatherInfo GetWeatherInfoByCity(string city);
+        WeatherResponse GetWeatherInfoByGeo(double latitude, double longitude);
     }
 }
