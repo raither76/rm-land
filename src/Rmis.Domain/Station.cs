@@ -6,7 +6,7 @@
 
         public string DisplayName { get; set; }
 
-        public decimal? TemperatureC { get; set; }
+        public decimal TemperatureC { get; set; }
 
         public double Latitude { get; set; }
 

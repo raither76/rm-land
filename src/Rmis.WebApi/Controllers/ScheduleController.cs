@@ -65,50 +65,9 @@ namespace Rmis.WebApi.Controllers
             }
         }
 
-        [HttpPost("/TrackInfo")]
-        public IActionResult SaveTrackInfo([FromBody] TrackInfoDto trackInfo)
-        {
-            try
-            {
-                _scheduleService.SaveTrackInfo(trackInfo);
-                
-                return this.Ok("Данные о местоположении поезда успешно обработаны");
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(e.Message);
-            }
-        }
 
-        [HttpGet("/TrackInfo")]
-        public IActionResult GetLastTrackInfo(string trainNumber)
-        {
-            try
-            {
-                TrackInfoDto trackInfo = _scheduleService.GetLastTrackInfo(trainNumber);
-                if (trackInfo == null)
-                    return this.NotFound("Данные о текущем положении поезда отстутствуют");
-                
-                return this.Ok(trackInfo);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(e.Message);
-            }
-        }
 
-        [HttpPost("[action]")]
-        public IActionResult SyncWeatherInfo()
-        {
-            try
-            {
-                _scheduleService.SyncWeatherInfo();
-                return this.Ok("Данные о погоде обновлены");
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(e.Message);
-            }
-        }
+
+        
     }
 }

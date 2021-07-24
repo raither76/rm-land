@@ -16,6 +16,18 @@ namespace Rmis.Application
         public DateTimeOffset? DepartureDate { get; set; }
         
         public DateTimeOffset? ArrivalDate { get; set; }
+        
+        public decimal TemperatureC { get; set; }
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
+        public decimal WindSpeed { get; set; }
+
+        public int WindDirectionDeg { get; set; }
+
+        public string WeatherDescription { get; set; }
 
         public static StopVm CreateFrom(Stop stop, Route route)
         {
@@ -32,7 +44,13 @@ namespace Rmis.Application
                 DisplayName = stop.Station?.DisplayName,
                 DepartureDate = stop.DepartureDate,
                 ArrivalDate = stop.ArrivalDate,
-                Code = $"{route.Number}_{stop.Station?.YaCode}"
+                Code = $"{route.Number}_{stop.Station?.YaCode}",
+                TemperatureC = stop.Station.TemperatureC,
+                Latitude = stop.Station.Latitude,
+                Longitude = stop.Station.Longitude,
+                WindSpeed = stop.Station.WindSpeed,
+                WindDirectionDeg = stop.Station.WindDirectionDeg,
+                WeatherDescription = stop.Station.WeatherDescription
             };
         }
     }

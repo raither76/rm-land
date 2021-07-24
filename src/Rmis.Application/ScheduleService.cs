@@ -21,15 +21,13 @@ namespace Rmis.Application
         private readonly IRmisDbContext _context;
         private readonly ILogger<ScheduleService> _logger;
         private readonly IGoogleSheetsScheduleProvider _googleScheduleProvider;
-        private readonly IOpenWeatherProvider _openWeatherProvider;
 
-        public ScheduleService(IYandexScheduleProvider scheduleProvider, IRmisDbContext context, ILogger<ScheduleService> logger, IGoogleSheetsScheduleProvider googleScheduleProvider, IOpenWeatherProvider openWeatherProvider)
+        public ScheduleService(IYandexScheduleProvider scheduleProvider, IRmisDbContext context, ILogger<ScheduleService> logger, IGoogleSheetsScheduleProvider googleScheduleProvider)
         {
             _scheduleProvider = scheduleProvider;
             _context = context;
             _logger = logger;
             _googleScheduleProvider = googleScheduleProvider;
-            _openWeatherProvider = openWeatherProvider;
         }
 
         private Dictionary<string, YandexStation> _allYandexStations;
@@ -237,38 +235,6 @@ namespace Rmis.Application
             _logger.LogInformation("Расписание синхронизировано");
         }
 
-        public void SaveTrackInfo(TrackInfoDto trackInfoDto)
-        {
-            try
-            {
-                _logger.LogInformation("Запуск обработки текущего местоположения поезда");
-                
-                if (trackInfoDto == null)
-                    throw new ArgumentNullException(nameof(trackInfoDto));
-                
-                _context.TrackInfoRepository.Add(new()
-                {
-                    Date = DateTime.Now,
-                    Latitude = trackInfoDto.Latitude,
-                    Longitude = trackInfoDto.Longitude,
-                    Speed = trackInfoDto.Speed,
-                    TrainNumber = trackInfoDto.TrainNumber,
-                    CreateDate = DateTimeOffset.Now,
-                    ModifyDate = DateTimeOffset.Now
-                });
-
-                _context.SaveChanges();
-                
-                _logger.LogInformation($"Текущее местоположение поезда(номер: {trackInfoDto.TrainNumber}) обработано");
-            }
-            catch (Exception e)
-            {
-                string message = $"Ошибка при обработке текущего местоположения поезда номер: {trackInfoDto?.TrainNumber}";
-                _logger.LogError(e, message);
-                throw new Exception(message, e);
-            }
-        }
-
         public void SyncSchedulesFromGoogle()
         {
             DateTime fromDate = DateTime.Now.Date;
@@ -298,7 +264,7 @@ namespace Rmis.Application
                 foreach (string trainNumber in trainNumberChunks)
                 {
                     IEnumerable<Schedule> schedulesByRouteNumber = schedules.Where(s => s.Route.Number == googleSchedule.Number && s.Date == googleSchedule.Date);
-                    Schedule schedule = schedulesByRouteNumber.FirstOrDefault(s => s.TrainNumber == trainNumber) ?? schedulesByRouteNumber.FirstOrDefault();
+                    Schedule schedule = schedulesByRouteNumber.FirstOrDefault(s => s.TrainNumber == trainNumber);// ?? schedulesByRouteNumber.FirstOrDefault();
                     
                     if (schedule == null)
                     {
@@ -400,71 +366,6 @@ namespace Rmis.Application
                 .Select(s => ScheduleVm.CreateFrom(s))
                 .ToList()
                 .Where(s => s.ArrivalDate >= DateTimeOffset.Now);
-        }
-
-        public TrackInfoDto GetLastTrackInfo(string trainNumber)
-        {
-            try
-            {
-                _logger.LogInformation($"Запуск процедуры получения текущего местоположения поезда номер: {trainNumber}");
-                
-                if (string.IsNullOrEmpty(trainNumber))
-                    throw new ArgumentNullException(nameof(trainNumber));
-
-                TrackInfo trackInfo = _context.TrackInfoRepository.Where(t => t.TrainNumber == trainNumber)
-                    .OrderByDescending(t => t.Date)
-                    .FirstOrDefault();
-
-                if (trackInfo == null)
-                {
-                    _logger.LogWarning($"Отсутствуют данные от текущем местоположении поезда номер: {trainNumber}");
-                    return null;
-                }
-
-                TrackInfoDto result = new()
-                {
-                    Latitude = trackInfo.Latitude,
-                    Longitude = trackInfo.Longitude,
-                    Speed = trackInfo.Speed,
-                    TrainNumber = trackInfo.TrainNumber
-                };
-
-                _logger.LogInformation($"Получены данные о текущем местоположении поезда номер: {trainNumber}");
-                
-                return result;
-            }
-            catch (Exception e)
-            {
-                string message = $"Ошибка при получении информации о текущеем местоположении поезда номер: {trainNumber}";
-                _logger.LogError(e, message);
-                throw new Exception(message, e);
-            }
-        }
-        
-        public void SyncWeatherInfo()
-        {
-            try
-            {
-                foreach (Station station in _context.StationRepository)
-                {
-                    WeatherResponse weatherResponse = _openWeatherProvider.GetWeatherInfoByGeo(station.Latitude, station.Longitude);
-                    if (weatherResponse != null)
-                    {
-                        station.TemperatureC = weatherResponse.main.temp;
-                        station.WindSpeed = weatherResponse.wind.speed;
-                        station.WindDirectionDeg = weatherResponse.wind.deg;
-                        station.WeatherDescription = weatherResponse.weather[0].main;
-                    }
-                }
-
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                string message = $"Ошибка при получении текущей информации о погоде";
-                _logger.LogError(e, message);
-                throw new Exception(message, e);
-            }
         }
     }
 }

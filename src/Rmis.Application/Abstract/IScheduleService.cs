@@ -12,10 +12,6 @@ namespace Rmis.Application.Abstract
 
         IEnumerable<ScheduleVm> GetSchedulesByTrainNumber(string trainNumber);
 
-        void SaveTrackInfo(TrackInfoDto trackInfoDto);
-
-        TrackInfoDto GetLastTrackInfo(string trainNumber);
-
-        void SyncWeatherInfo();
+        
     }
 }

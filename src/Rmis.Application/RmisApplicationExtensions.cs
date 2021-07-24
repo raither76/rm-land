@@ -7,7 +7,9 @@ namespace Rmis.Application
     {
         public static IServiceCollection AddRmisApplication(this IServiceCollection services)
         {
-            return services.AddTransient<IScheduleService, ScheduleService>();
+            return services.AddTransient<IScheduleService, ScheduleService>()
+                .AddTransient<ITrackingService, TrackingService>()
+                .AddTransient<IWeatherService, WeatherService>();
         }
     }
 }
