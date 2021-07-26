@@ -53,7 +53,7 @@ namespace Rmis.Application
                 WeatherResponse weatherResponse = _weatherProvider.GetWeatherInfoByGeo(latitude, longitude);
                 WeatherInfo result = new()
                 {
-                    TemperatureC = weatherResponse.main.temp,
+                    Temperature = weatherResponse.main.temp,
                     WeatherDescription = weatherResponse.weather[0].main,
                     WindSpeed = weatherResponse.wind.speed,
                     WindDirectionDeg = weatherResponse.wind.deg

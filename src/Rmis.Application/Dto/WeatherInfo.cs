@@ -2,8 +2,8 @@
 {
     public class WeatherInfo
     {
-        public decimal TemperatureC { get; set; }
-        
+        public decimal Temperature { get; set; }
+
         public decimal WindSpeed { get; set; }
 
         public int WindDirectionDeg { get; set; }
